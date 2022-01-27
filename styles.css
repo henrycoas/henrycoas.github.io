@@ -2,7 +2,7 @@ body {
     width: 100vw;
     height: 100vh;
     margin: 0;
-    background: rgb(55, 66, 91);
+    background: rgb(0, 0, 0);
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -39,6 +39,6 @@ body {
     word-spacing: normal;
     letter-spacing: 5px;
     border: 1px solid white;
-    background: rgb(55, 66, 91);
+    background: rgb(0, 0, 0);
     cursor: pointer;
   }
