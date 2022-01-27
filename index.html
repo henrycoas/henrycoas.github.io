@@ -27,9 +27,12 @@
       camera.rotation.x = Math.PI/2;
 
       renderer = new THREE.WebGLRenderer();
+      /* Size set to match the current viewport */
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
 
+      /* Creation of one object with lots of vertices,
+          each vertice will represent a star */
       starGeo = new THREE.Geometry();
       for(let i=0;i<6000;i++) {
         star = new THREE.Vector3(
@@ -37,14 +40,16 @@
           Math.random() * 600 - 300,
           Math.random() * 600 - 300
         );
+        /* Initial v and a of the stars */
         star.velocity = 0;
         star.acceleration = 0.02;
         starGeo.vertices.push(star);
       }
 
-      let sprite = new THREE.TextureLoader().load( 'star.png' );
+      /* Load star image and change color or size*/
+      let sprite = new THREE.TextureLoader().load('star.png');
       let starMaterial = new THREE.PointsMaterial({
-        color: 0xaaaaaa,
+        color: 0x99aaff,  
         size: 0.7,
         map: sprite
       });
@@ -66,6 +71,7 @@
         p.velocity += p.acceleration
         p.y -= p.velocity;
         
+        /* If star goes out of the screen, reset its position and velocity */
         if (p.y < -200) {
           p.y = 200;
           p.velocity = 0;
@@ -75,6 +81,7 @@
       stars.rotation.y +=0.002;
     
       renderer.render(scene, camera);
+      /* Recursion call */
       requestAnimationFrame(animate);
     }
     init();

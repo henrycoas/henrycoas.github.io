@@ -3,7 +3,7 @@
     height: 100vh;
     margin: 0;
     background: rgb(0, 0, 0);
-    overflow: hidden;
+    overflow: hidden; /*to remove the scrollbar*/
     display: flex;
     justify-content: center;
     align-items: center;
