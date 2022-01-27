@@ -7,6 +7,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    scroll-behavior: smooth;
   }
   canvas {
     position: absolute;
@@ -48,9 +49,10 @@
   }
   a {
     text-decoration: none;
-    color: black;
+    color: aliceblue;
   } 
   #aboutme {
     margin-top: 100%;
     padding-bottom: 25%;
+    color: aliceblue;
   } 
