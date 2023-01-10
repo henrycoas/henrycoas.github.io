@@ -100,6 +100,7 @@ a.button-projects {
   display: flex;
   flex-wrap: wrap; /* Allows the cards to wrap onto multiple lines when the screen is smaller */
   justify-content: space-between; /* Spreads the cards out evenly across the parent container */
+  font-family: 'Raleway', sans-serif;
 }
 
 /* Style for each individual project card */
