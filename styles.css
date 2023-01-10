@@ -3,7 +3,7 @@ body {
   height: 100vh;
   margin: 0;
   background: rgb(0, 0, 0);
-  overflow-y:scroll;
+  overflow-y:auto;
   overflow-x:hidden;
   display: flex;
   flex-direction: column;
@@ -25,10 +25,7 @@ canvas {
   text-transform: uppercase;
   color:rgb(238, 238, 238);
   clear: both;
-  margin-top: 80%;
-}
-.projects {
-  margin-top: 50%;
+  margin-top: 120%;
 }
 .button-wrapper {
   display: flex;
@@ -59,7 +56,7 @@ canvas {
   margin-right:20px;
   word-spacing: normal;
   letter-spacing: 5px;
-  border: 1px solid rgb(206, 193, 13);
+  border: 1px solid rgb(206, 42, 13);
   background: rgb(0, 0, 0);
   cursor: pointer;
 }
@@ -72,7 +69,7 @@ canvas {
   margin-right:20px;
   word-spacing: normal;
   letter-spacing: 5px;
-  border: 1px solid rgb(206, 42, 13);
+  border: 1px solid rgb(206, 193, 13);
   background: rgb(0, 0, 0);
   cursor: pointer;
 }
@@ -85,14 +82,15 @@ a.button-aboutme {
   appearance: button-aboutme;
 
   text-decoration: none;
-  color: rgb(206, 193, 13);
+  color: rgb(206, 42, 13);
 } 
 a.button-linkedin {
   color: rgb(0, 80, 252);
 }
 a.button-projects {
   text-decoration: none;
-  color: rgb(206, 42, 13);
+  color: rgb(206, 193, 13);
+
 }
 
 /* Parent container for the project cards */
@@ -127,7 +125,7 @@ a.button-projects {
   margin-top: 0; /* Remove the margin at the top of the title */
   font-size: 18px; /* Increase the font size of the title */
   font-weight: bold; /* Make the title bold */
-  color: rgb(206, 42, 13);
+  color: rgb(206, 193, 13);
 }
 
 /* Style for the project description within the project card */
@@ -144,6 +142,6 @@ a.button-projects {
   margin-top: 10px; /* Add some margin between the description and link */
   text-align: center; /* Center the link within the card */
   text-decoration: none; /* Remove the underline from the link */
-  color: blue; /* Change the color of the link to blue */
+  color: rgb(0, 80, 252);; /* Change the color of the link to blue */
   font-weight: bold; /* Make the link bold */
 }
