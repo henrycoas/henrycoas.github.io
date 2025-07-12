@@ -28,8 +28,13 @@
       camera.rotation.x = Math.PI/2;
 
       renderer = new THREE.WebGLRenderer();
-      /* Size set to match the current viewport */
       renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.domElement.style.position = 'fixed';
+      renderer.domElement.style.top = '0';
+      renderer.domElement.style.left = '0';
+      renderer.domElement.style.width = '100vw';
+      renderer.domElement.style.height = '100vh';
+      renderer.domElement.style.zIndex = '-1';
       document.body.appendChild(renderer.domElement);
 
       /* Creation of one object with lots of vertices,
