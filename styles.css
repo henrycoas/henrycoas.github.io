@@ -55,8 +55,8 @@ html {
   left: 0;
   width: 100vw;
   height: var(--header-height, 120px);
-  background: rgba(0,0,0,1);
-  z-index: 999;
+  background: rgba(0,0,0);
+  z-index: -1;
   pointer-events: none;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -134,22 +134,22 @@ a.button-competitions {
 }
 /* Work-related item card */
 .work-card {
-  background: rgba(255, 0, 0, 0.1);
+  background: rgba(255, 0, 0, 0.25);
   border: 1px solid rgb(255, 0, 0);
 }
 /* Project-related item card */
 .project-card {
-  background: rgba(255, 255, 0, 0.1);
+  background: rgba(255, 255, 0, 0.25);
   border: 1px solid rgb(255, 255, 0);
 }
 /* Competitions/Awards-related item card */
 .competitions-card {
-  background: rgba(0, 255, 0, 0.1);
+  background: rgba(0, 255, 0, 0.25);
   border: 1px solid rgb(0, 255, 0);
 }
 /* LinkedIn-related item card */
 .linkedin-card {
-  background: rgba(0, 0, 255, 0.1);
+  background: rgba(0, 0, 255, 0.25);
   border: 1px solid rgb(0, 0, 255);
 }
 /* Image in the item card */
