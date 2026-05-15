@@ -1,172 +1,797 @@
-body {
-  width: 100vw;
-  min-height: 100vh;
-  margin: 0;
-  background: rgb(0, 0, 0);
-  overflow-y: auto;
-  overflow-x:hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  scroll-behavior: smooth;
-  padding-top: 120px; /* Space for sticky header */
+:root {
+  --color-work: rgb(255, 51, 51);
+  --color-projects: rgb(255, 255, 51);
+  --color-competitions: rgb(51, 255, 51);
+  --color-more: rgb(51, 51, 255);
+  --color-text: rgb(238, 238, 238);
+  --color-muted: rgb(203, 203, 203);
+  --nav-height: 100px;
+  --cockpit-cyan: #5eebf0;
+  --cockpit-panel: #0a1218;
+  --cockpit-border: #2a4a5a;
+  --font-main: 'Raleway', sans-serif;
 }
-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
+
 html {
-  #projects h2, #work h2, #competitions h2, #linkedin h2 {
-    text-align: center;
-  }
   scroll-behavior: smooth;
 }
-/* TEXT BOXES */
-.text-box {
-  font-size: 60px;
-  font-family: 'Raleway', sans-serif;
-  letter-spacing: 7px;
-  word-spacing: 12px;
-  text-transform: uppercase;
-  color:rgb(238, 238, 238);
-  clear: both;
-  margin-top: 0;
-  position: sticky;
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #000;
+  color: var(--color-text);
+  font-family: var(--font-main);
+  overflow-x: hidden;
+}
+
+body.mode-explore {
+  overflow: hidden;
+}
+
+body.mode-overview {
+  overflow-y: auto;
+}
+
+/* Nav */
+.site-nav {
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  width: 100vw;
   z-index: 1000;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 2px 16px rgba(0,0,0,0.3);
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-.text-box .heading {
-  text-align: center;
-  width: 100%;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem 1rem;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
 }
 
-/* BUTTONS */
-.button {
-  display: inline-block;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 15px;
-  margin-left:20px;
-  margin-right:20px;
-  word-spacing: normal;
-  letter-spacing: 5px;
-  cursor: pointer;
-  background: rgb(0, 0, 0);
+.site-nav__title {
+  margin: 0;
+  font-size: clamp(1.25rem, 4vw, 2.25rem);
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  text-align: center;
 }
-.button-wrapper {
+
+.site-nav__controls {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  flex-direction: row;
-}
-.button-linkedin {
-  border: 1px solid rgb(0, 0, 255);
-}
-.button-work {
-  border: 1px solid rgb(255, 0, 0);
-}
-.button-projects {
-  border: 1px solid rgb(255, 255, 0);
-}
-.button-competitions {
-  border: 1px solid rgb(0, 255, 0);
-}
-a.button-work {
-  text-decoration: none;
-  color: rgb(255, 0, 0);
-}
-a.button-linkedin {
-  text-decoration: none;
-  color: rgb(0, 0, 255);
-}
-a.button-projects {
-  text-decoration: none;
-  color: rgb(255, 255, 0);
-}
-a.button-competitions {
-  text-decoration: none;
-  color: rgb(0, 255, 0);
+  gap: 0.5rem 0.75rem;
+  width: 100%;
+  max-width: 1100px;
 }
 
-/* ITEM CARDS */
-/* Parent container for the item cards */
+.site-nav__categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.site-nav__legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.nav-btn {
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  background: #000;
+  color: var(--color-text);
+  border: 1px solid #555;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.nav-btn:hover,
+.nav-btn:focus-visible {
+  background: #1a1a1a;
+  outline: none;
+}
+
+.nav-btn--primary {
+  border-color: var(--color-text);
+}
+
+.nav-btn--work {
+  border-color: var(--color-work);
+  color: var(--color-work);
+}
+
+.nav-btn--projects {
+  border-color: var(--color-projects);
+  color: var(--color-projects);
+}
+
+.nav-btn--competitions {
+  border-color: var(--color-competitions);
+  color: var(--color-competitions);
+}
+
+.nav-btn--more {
+  border-color: var(--color-more);
+  color: var(--color-more);
+}
+
+.nav-btn--active {
+  box-shadow: 0 0 12px currentColor;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Keyboard hints */
+.key-hint {
+  display: inline-block;
+  font-family: var(--font-main);
+  font-size: 0.7em;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  color: #fff;
+  margin-left: 0.35em;
+  margin-right: 0;
+  vertical-align: middle;
+}
+
+.nav-btn .key-hint,
+.screen-back .key-hint,
+.screen-row__action .key-hint,
+.screen-detail__link .key-hint {
+  margin-left: 0.4em;
+}
+
+/* Cockpit explore */
+.cockpit {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  padding-top: var(--nav-height);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.cockpit__hull {
+  pointer-events: auto;
+  position: relative;
+  width: min(1100px, 100%);
+  height: 100%;
+  margin: 0 0.5rem 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  gap: 0;
+}
+
+.cockpit__deck {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 2px solid var(--cockpit-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--cockpit-panel);
+  box-shadow:
+    0 0 0 1px rgba(94, 235, 240, 0.08),
+    0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+.cockpit__window-wrap {
+  position: relative;
+  flex: 1.35 1 0;
+  min-height: clamp(160px, 40vh, 52vh);
+  max-height: 58vh;
+  overflow: hidden;
+  background: #000;
+}
+
+.cockpit__window {
+  position: absolute;
+  inset: 0;
+  bottom: 28px;
+  opacity: 0.9;
+}
+
+.cockpit__window canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.cockpit__viewport-msg {
+  position: absolute;
+  left: 0.65rem;
+  right: 0.65rem;
+  bottom: 2.25rem;
+  z-index: 1;
+  pointer-events: none;
+  padding: 0.55rem 0.7rem;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.35), transparent);
+  border-left: 2px solid rgba(94, 235, 240, 0.55);
+}
+
+.cockpit__viewport-msg-line {
+  margin: 0;
+  font-family: ui-monospace, 'Cascadia Mono', 'Consolas', monospace;
+  font-size: clamp(0.62rem, 1.6vw, 0.78rem);
+  line-height: 1.45;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cockpit-cyan);
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.9);
+}
+
+.cockpit__viewport-msg-line--sub {
+  margin-top: 0.25rem;
+  font-family: var(--font-main);
+  font-size: clamp(0.68rem, 1.8vw, 0.82rem);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: rgba(238, 238, 238, 0.88);
+  font-weight: normal;
+}
+
+.cockpit__window-frame {
+  position: absolute;
+  inset: 0;
+  bottom: 28px;
+  pointer-events: none;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+}
+
+.cockpit__window-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  background: rgba(6, 10, 14, 0.92);
+  border-top: 1px solid var(--cockpit-border);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  color: var(--cockpit-cyan);
+}
+
+.cockpit__status {
+  color: #7ab8c0;
+}
+
+.cockpit__deck .cockpit__screen {
+  flex: 1 1 0;
+  min-height: min(220px, 32vh);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.75rem 1rem 1rem;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.12) 2px,
+      rgba(0, 0, 0, 0.12) 4px
+    ),
+    radial-gradient(ellipse at 50% 0%, rgba(30, 60, 80, 0.35), transparent 70%),
+    #060a0e;
+}
+
+.cockpit__screen--fade {
+  animation: screenFade 0.2s ease-out;
+}
+
+@keyframes screenFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cockpit__side {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .cockpit__hull {
+    grid-template-columns: 20px 1fr 20px;
+  }
+
+  .cockpit__deck {
+    grid-column: 2;
+  }
+
+  .cockpit__side {
+    display: block;
+    background: linear-gradient(90deg, #1a2830, #0e161c);
+    border: 1px solid var(--cockpit-border);
+    border-radius: 8px;
+  }
+
+  .cockpit__side--left {
+    grid-column: 1;
+  }
+
+  .cockpit__side--right {
+    grid-column: 3;
+  }
+}
+
+body.mode-overview .cockpit {
+  display: none;
+}
+
+.screen-console {
+  font-family: ui-monospace, 'Cascadia Mono', 'Consolas', monospace;
+  font-size: 0.7rem;
+  line-height: 1.55;
+  letter-spacing: 0.06em;
+  color: var(--cockpit-cyan);
+  margin: 0 0 0.85rem;
+  padding: 0.5rem 0.65rem;
+  border-left: 2px solid rgba(94, 235, 240, 0.6);
+  background: rgba(0, 0, 0, 0.35);
+  text-transform: uppercase;
+}
+
+.screen-console__line {
+  margin: 0;
+  opacity: 0.92;
+}
+
+.screen-console__line--blink::after {
+  content: '█';
+  margin-left: 0.1em;
+  animation: console-blink 1.1s step-end infinite;
+}
+
+@keyframes console-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.screen-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.screen-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 1rem;
+  cursor: pointer;
+  font-family: var(--font-main);
+  text-align: left;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--cockpit-border);
+  border-radius: 6px;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  color: var(--color-text);
+}
+
+.screen-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.screen-tile--work { border-color: var(--color-work); }
+.screen-tile--projects { border-color: var(--color-projects); }
+.screen-tile--competitions { border-color: var(--color-competitions); }
+.screen-tile--more { border-color: var(--color-more); }
+
+.screen-tile__label {
+  font-size: 0.95rem;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.screen-tile--work .screen-tile__label { color: var(--color-work); }
+.screen-tile--projects .screen-tile__label { color: var(--color-projects); }
+.screen-tile--competitions .screen-tile__label { color: var(--color-competitions); }
+.screen-tile--more .screen-tile__label { color: var(--color-more); }
+
+.screen-tile__count {
+  font-size: 0.75rem;
+  color: #8899aa;
+}
+
+.screen-view__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.screen-back {
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--cockpit-border);
+  color: var(--cockpit-cyan);
+  border-radius: 4px;
+}
+
+.screen-back:hover {
+  background: rgba(94, 235, 240, 0.1);
+}
+
+.screen-view__title {
+  margin: 0;
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.screen-view__title--work { color: var(--color-work); }
+.screen-view__title--projects { color: var(--color-projects); }
+.screen-view__title--competitions { color: var(--color-competitions); }
+.screen-view__title--more { color: var(--color-more); }
+
+.screen-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.screen-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  cursor: pointer;
+  font-family: var(--font-main);
+  text-align: left;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid #2a3a48;
+  border-radius: 6px;
+  color: var(--color-text);
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.screen-row:hover {
+  background: rgba(94, 235, 240, 0.06);
+  border-color: var(--cockpit-cyan);
+}
+
+.screen-row--split {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: default;
+}
+
+.screen-row--split:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+.screen-row__main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.65rem;
+  cursor: pointer;
+  font-family: var(--font-main);
+  text-align: left;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid #2a3a48;
+  border-radius: 6px;
+  color: var(--color-text);
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.screen-row__main:hover {
+  background: rgba(94, 235, 240, 0.06);
+  border-color: var(--cockpit-cyan);
+}
+
+.screen-row--split.screen-row--projects .screen-row__main {
+  border-left: 3px solid var(--color-projects);
+}
+
+.screen-row__action {
+  flex-shrink: 0;
+  padding: 0.45rem 0.75rem;
+  color: var(--cockpit-cyan);
+  border: 1px solid var(--cockpit-cyan);
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.screen-row__action:hover {
+  background: rgba(94, 235, 240, 0.12);
+}
+
+.screen-row--work { border-left: 3px solid var(--color-work); }
+.screen-row--projects { border-left: 3px solid var(--color-projects); }
+.screen-row--competitions { border-left: 3px solid var(--color-competitions); }
+.screen-row--more { border-left: 3px solid var(--color-more); }
+
+.screen-row__thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.screen-row__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.screen-row__title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--color-muted);
+}
+
+.screen-row__meta {
+  font-size: 0.75rem;
+  color: #8899aa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.screen-row__arrow {
+  font-size: 1.25rem;
+  color: var(--cockpit-cyan);
+  opacity: 0.7;
+}
+
+.screen-detail__image {
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--cockpit-border);
+}
+
+.screen-detail__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  color: var(--color-muted);
+}
+
+.screen-detail__desc {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.screen-detail__tech {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: #aab;
+}
+
+.screen-detail__link {
+  display: inline-block;
+  padding: 0.6rem 1rem;
+  color: var(--cockpit-cyan);
+  border: 1px solid var(--cockpit-cyan);
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.screen-detail__link:hover {
+  background: rgba(94, 235, 240, 0.12);
+}
+
+/* Overview */
+.overview {
+  position: relative;
+  z-index: 100;
+  margin-top: var(--nav-height);
+  padding: 1.5rem 1rem 3rem;
+  max-width: 1200px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.overview-section {
+  margin-bottom: 3rem;
+}
+
+.overview-section__header {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.overview-section__header--work { color: var(--color-work); }
+.overview-section__header--projects { color: var(--color-projects); }
+.overview-section__header--competitions { color: var(--color-competitions); }
+.overview-section__header--more { color: var(--color-more); }
+
+.overview-section__count {
+  font-size: 0.75rem;
+  font-weight: normal;
+  opacity: 0.7;
+}
+
 .item-cards {
   display: flex;
-  flex-wrap: wrap; /* Allows the cards to wrap onto multiple lines when the screen is smaller */
-  justify-content: space-between; /* Spreads the cards out evenly across the parent container */
-  font-family: 'Raleway', sans-serif;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
 }
-/* Item card */
+
 .item-card {
   width: 300px;
-  margin: 15px;
+  margin: 0;
   padding: 20px;
   border: 1px solid #ccc;
-  border-radius: 5px; /* Add rounded corners to the card */
-  background: rgb(0, 0, 0);
+  border-radius: 5px;
+  background: #000;
+  cursor: default;
+  font-family: var(--font-main);
 }
-/* Work-related item card */
+
 .work-card {
   background: rgba(255, 0, 0, 0.25);
-  border: 1px solid rgb(255, 0, 0);
+  border: 1px solid var(--color-work);
 }
-/* Project-related item card */
+
 .project-card {
   background: rgba(255, 255, 0, 0.25);
-  border: 1px solid rgb(255, 255, 0);
+  border: 1px solid var(--color-projects);
 }
-/* Competitions/Awards-related item card */
+
 .competitions-card {
   background: rgba(0, 255, 0, 0.25);
-  border: 1px solid rgb(0, 255, 0);
+  border: 1px solid var(--color-competitions);
 }
-/* LinkedIn-related item card */
+
 .linkedin-card {
   background: rgba(0, 0, 255, 0.25);
-  border: 1px solid rgb(0, 0, 255);
+  border: 1px solid var(--color-more);
 }
-/* Image in the item card */
+
 .item-card img {
-  max-width: 100%; /* Make sure the image does not overflow the card */
-  border-radius: 5px; /* Add rounded corners to the image */
+  max-width: 100%;
   height: 220px;
   object-fit: cover;
+  border-radius: 5px;
   display: block;
-  margin: 0 auto 18px auto;
+  margin: 0 auto 18px;
 }
-/* Title in the item card */
+
 .item-card h3 {
   font-size: 18px;
   font-weight: bold;
-  color: rgb(203, 203, 203);
+  color: var(--color-muted);
+  margin: 0;
 }
-/* Project description in the item card */
+
 .item-card p {
-  margin-top: 10px; /* Add some margin between the title and description */
+  margin-top: 10px;
   font-size: 14px;
   line-height: 1.5;
-  color: rgb(255, 255, 255);
+  color: #fff;
 }
-/* Link to the project in the item card */
-.item-card a {
-  display: block; /* Make the link take up the full width of the card */
-  margin-top: 10px; /* Add some margin between the description and link */
+
+.item-card .item-card__tech {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.item-card .item-card__link {
+  display: block;
+  margin-top: 10px;
   text-align: center;
-  text-decoration: none; /* Remove the underline from the link */
   color: rgb(0, 80, 252);
   font-weight: bold;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.item-card .item-card__link:hover {
+  text-decoration: underline;
+}
+
+.fallback-notice {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3000;
+  margin: 0;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  background: #331111;
+  color: #fcc;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 180px;
+  }
+
+  .site-nav__title {
+    letter-spacing: 0.15em;
+  }
+
+  .minimap {
+    flex-direction: row;
+    bottom: auto;
+    top: calc(var(--nav-height) - 2rem);
+    right: 0.5rem;
+  }
+
+  .item-card {
+    width: 100%;
+    max-width: 340px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .item-card,
+  .screen-tile,
+  .screen-row {
+    transition: none;
+  }
+
+  .cockpit__screen--fade {
+    animation: none;
+  }
 }
