@@ -22,19 +22,16 @@
       <div class="cockpit__hull">
         <div class="cockpit__side cockpit__side--left" aria-hidden="true"></div>
         <div class="cockpit__deck">
-          <div class="cockpit__window-wrap">
-            <div id="canvas-container" class="cockpit__window" aria-hidden="true"></div>
-            <div class="cockpit__viewport-msg" aria-label="Message from Enric">
-              <p class="cockpit__viewport-msg-line">&gt; [NEW MESSAGE] ORIGIN NODE: ENRIC CONDAL ASENSIO</p>
-              <p class="cockpit__viewport-msg-line cockpit__viewport-msg-line--sub">And... done. Now you should be able to access my portfolio.</p>
-            </div>
-            <div class="cockpit__window-frame" aria-hidden="true"></div>
-            <div class="cockpit__window-bar">
-              <span class="cockpit__console-label">MAIN DISPLAY</span>
-              <span id="cockpit-status" class="cockpit__status">SYS ONLINE</span>
-            </div>
+          <div id="canvas-container" class="cockpit__canvas" aria-hidden="true"></div>
+          <div id="welcome-msg" class="cockpit__welcome" aria-label="Message from Enric">
+            <p class="cockpit__welcome-line">&gt; [NEW MESSAGE] ORIGIN NODE: ENRIC CONDAL ASENSIO</p>
+            <p class="cockpit__welcome-line cockpit__welcome-line--sub">And... done. Now you should be able to access my portfolio.</p>
           </div>
           <div id="main-screen" class="cockpit__screen" role="region" aria-label="Portfolio display"></div>
+          <div class="cockpit__status-bar">
+            <span class="cockpit__status-label">MAIN DISPLAY</span>
+            <span id="cockpit-status" class="cockpit__status">SYS ONLINE</span>
+          </div>
         </div>
         <div class="cockpit__side cockpit__side--right" aria-hidden="true"></div>
       </div>
