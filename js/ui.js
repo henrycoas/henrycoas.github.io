@@ -109,22 +109,25 @@ function showCockpitHome() {
   activeCategory = null;
   setActiveNavCategory(null);
   dom.cockpitStatus.textContent = 'SYS ONLINE — SELECT SECTOR';
+  if (dom.welcomeMsg) dom.welcomeMsg.classList.remove('is-hidden');
 
   const tiles = CATEGORIES.map(
-    (cat) => `
-    <button type="button" class="screen-tile screen-tile--${cat.css}" data-category="${cat.id}">
-      <span class="screen-tile__label">${cat.label} ${formatKeyHint(cat.key)}</span>
-      <span class="screen-tile__count">${getItemsByCategory(cat.id).length} entries</span>
-    </button>`
+    (cat) => {
+      const count = getItemsByCategory(cat.id).length;
+      const countText = count === 1 ? '1 entry' : `${count} entries`;
+      return `
+      <button type="button" class="screen-tile screen-tile--${cat.css}" data-category="${cat.id}">
+        <span class="screen-tile__label">${cat.label} ${formatKeyHint(cat.key)}</span>
+        <span class="screen-tile__count">${countText}</span>
+      </button>`;
+    }
   ).join('');
 
   renderScreen(`
-    <div class="screen-view screen-view--home">
+    <div class="screen-panel screen-panel--home">
       ${machineConsole(
         [
           '> MAIN DISPLAY ONLINE',
-          '> ENCOAS PACKAGE DECRYPTED',
-          '> CREW ARCHIVE NODE · LOCAL CACHE OK',
           '> AWAITING SECTOR SELECTION_',
         ],
         { blink: true }
@@ -142,6 +145,7 @@ function showCockpitCategory(categoryId) {
   const cat = getCategory(categoryId);
   if (!cat) return;
 
+  hideWelcomeMessage();
   cockpitView = 'category';
   activeCategory = categoryId;
   setActiveNavCategory(categoryId);
@@ -149,17 +153,16 @@ function showCockpitCategory(categoryId) {
 
   const items = getItemsByCategory(categoryId);
   const rows = items.map((item, index) => renderCategoryRow(item, index, cat)).join('');
+  const recordWord = items.length === 1 ? 'RECORD' : 'RECORDS';
 
   renderScreen(`
-    <div class="screen-view">
+    <div class="screen-panel">
       <div class="screen-view__bar">
         <button type="button" class="screen-back" data-action="home">${labelWithKey('Home', KEYS.home)}</button>
         <h2 class="screen-view__title screen-view__title--${cat.css}">${cat.label}</h2>
       </div>
       ${machineConsole([
-        `> SECTOR LOCK: ${cat.label.toUpperCase()}`,
-        `> INDEX SCAN COMPLETE · ${items.length} RECORD(S) IN QUEUE`,
-        '> SELECT ENTRY OR TRANSMIT DIRECT ACCESS',
+        `> SECTOR: ${cat.label.toUpperCase()} · ${items.length} ${recordWord}`,
       ])}
       <div class="screen-list">${rows}</div>
     </div>
@@ -173,9 +176,10 @@ function showCockpitItem(itemId) {
   const item = getItem(itemId);
   if (!item) return;
 
+  hideWelcomeMessage();
   cockpitView = 'item';
   const cat = getCategory(item.category);
-  dom.cockpitStatus.textContent = `FILE: ${item.title.slice(0, 32).toUpperCase()}`;
+  dom.cockpitStatus.textContent = `FILE: ${item.title.slice(0, 28).toUpperCase()}`;
 
   const linkHtml =
     item.url && item.linkLabel
@@ -183,20 +187,14 @@ function showCockpitItem(itemId) {
       : '';
   const techHtml = item.tech?.length ? `<p class="screen-detail__tech">(${item.tech.join(', ')})</p>` : '';
 
-  const fileRef = item.id.replace(/-/g, '_').toUpperCase();
-
   renderScreen(`
-    <div class="screen-view">
+    <div class="screen-panel">
       <div class="screen-view__bar">
         <button type="button" class="screen-back" data-action="back">${labelWithKey('Back', KEYS.back)}</button>
+        <h2 class="screen-view__title screen-view__title--${cat?.css ?? 'work'}">${cat?.label ?? 'File'}</h2>
       </div>
-      ${machineConsole([
-        `> FILE RETRIEVED · REF ${fileRef}`,
-        '> BUFFER DECODE OK · DISPLAYING RECORD',
-        '> END OF TRANSMISSION WHEN DONE',
-      ])}
       <article class="screen-detail screen-detail--${cat?.css ?? 'work'}">
-        <img class="screen-detail__image" src="${item.image}" alt="${item.title}" />
+        <img class="screen-detail__image" src="${item.image}" alt="${item.title}" loading="lazy" />
         <h2 class="screen-detail__title">${item.title}</h2>
         <p class="screen-detail__desc">${item.description}</p>
         ${techHtml}
@@ -397,6 +395,7 @@ export function initUI(options) {
   dom.cockpit = document.getElementById('cockpit');
   dom.mainScreen = document.getElementById('main-screen');
   dom.cockpitStatus = document.getElementById('cockpit-status');
+  dom.welcomeMsg = document.getElementById('welcome-msg');
   dom.overview = document.getElementById('overview');
   dom.overviewSections = document.getElementById('overview-sections');
   dom.fallbackNotice = document.getElementById('fallback-notice');
@@ -411,6 +410,12 @@ export function initUI(options) {
   } else {
     showCockpitHome();
     updateModeToggleLabel();
+  }
+}
+
+function hideWelcomeMessage() {
+  if (dom.welcomeMsg && !dom.welcomeMsg.classList.contains('is-hidden')) {
+    dom.welcomeMsg.classList.add('is-hidden');
   }
 }
 
