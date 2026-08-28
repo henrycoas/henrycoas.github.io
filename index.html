@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet" />
   </head>
   <body class="mode-explore">
+    <a href="#main-screen" class="skip-link">Skip to content</a>
     <header class="site-nav" role="banner">
       <h1 class="site-nav__title">Enric Condal Asensio</h1>
       <nav class="site-nav__controls" aria-label="Main navigation">
@@ -44,6 +45,30 @@
     <p id="fallback-notice" class="fallback-notice" hidden>
       3D view unavailable — showing overview.
     </p>
+
+    <aside id="help-panel" class="help-panel" hidden aria-hidden="true" aria-label="Keyboard shortcuts">
+      <div class="help-panel__content">
+        <h2 class="help-panel__title">Keyboard Shortcuts</h2>
+        <button type="button" class="help-panel__close" aria-label="Close help">&times;</button>
+        <dl class="help-panel__list">
+          <div class="help-panel__group">
+            <dt class="help-panel__group-title">Navigation</dt>
+            <dd><kbd>W</kbd> <kbd>P</kbd> <kbd>C</kbd> <kbd>M</kbd> Category sections</dd>
+            <dd><kbd>1</kbd>–<kbd>9</kbd> Select item in list</dd>
+            <dd><kbd>H</kbd> Home</dd>
+            <dd><kbd>B</kbd> Back</dd>
+            <dd><kbd>Esc</kbd> Go back / close</dd>
+          </div>
+          <div class="help-panel__group">
+            <dt class="help-panel__group-title">Actions</dt>
+            <dd><kbd>L</kbd> Open external link</dd>
+            <dd><kbd>O</kbd> Overview mode</dd>
+            <dd><kbd>E</kbd> Explore mode</dd>
+            <dd><kbd>?</kbd> Toggle this help</dd>
+          </div>
+        </dl>
+      </div>
+    </aside>
 
     <script type="importmap">
       {

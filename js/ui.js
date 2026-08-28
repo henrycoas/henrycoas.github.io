@@ -21,6 +21,8 @@ let reducedMotion = false;
 let activeCategory = null;
 let cockpitView = 'home';
 let overviewCategory = null;
+let currentItemId = null;
+let helpVisible = false;
 
 const dom = {};
 
@@ -107,6 +109,7 @@ function bindCategoryList() {
 function showCockpitHome() {
   cockpitView = 'home';
   activeCategory = null;
+  currentItemId = null;
   setActiveNavCategory(null);
   dom.cockpitStatus.textContent = 'SYS ONLINE — SELECT SECTOR';
   if (dom.welcomeMsg) dom.welcomeMsg.classList.remove('is-hidden');
@@ -148,6 +151,7 @@ function showCockpitCategory(categoryId) {
   hideWelcomeMessage();
   cockpitView = 'category';
   activeCategory = categoryId;
+  currentItemId = null;
   setActiveNavCategory(categoryId);
   dom.cockpitStatus.textContent = `SECTOR: ${cat.label.toUpperCase()}`;
 
@@ -178,6 +182,7 @@ function showCockpitItem(itemId) {
 
   hideWelcomeMessage();
   cockpitView = 'item';
+  currentItemId = itemId;
   const cat = getCategory(item.category);
   dom.cockpitStatus.textContent = `FILE: ${item.title.slice(0, 28).toUpperCase()}`;
 
@@ -322,7 +327,11 @@ function bindKeyboard() {
 
     if (key === 'escape') {
       e.preventDefault();
-      keyboardActions.onEscape();
+      if (helpVisible) {
+        toggleHelp();
+      } else {
+        keyboardActions.onEscape();
+      }
       return;
     }
     if (key === KEYS.modeOverview && mode === 'explore') {
@@ -343,6 +352,12 @@ function bindKeyboard() {
       return;
     }
 
+    if (key === '?' || (e.shiftKey && key === '/')) {
+      e.preventDefault();
+      toggleHelp();
+      return;
+    }
+
     if (mode !== 'explore') return;
 
     if (key === KEYS.home && cockpitView !== 'home') {
@@ -351,6 +366,9 @@ function bindKeyboard() {
     } else if (key === KEYS.back && cockpitView === 'item') {
       e.preventDefault();
       keyboardActions.goBack();
+    } else if (key === KEYS.openLink) {
+      e.preventDefault();
+      openCurrentLink();
     } else if (cockpitView === 'category' && key >= '1' && key <= '9') {
       const items = getItemsByCategory(activeCategory);
       const item = items[parseInt(key, 10) - 1];
@@ -359,6 +377,42 @@ function bindKeyboard() {
         showCockpitItem(item.id);
       }
     }
+  });
+}
+
+function openCurrentLink() {
+  if (cockpitView === 'item' && currentItemId) {
+    const item = getItem(currentItemId);
+    if (item?.url) {
+      window.open(item.url, '_blank', 'noopener,noreferrer');
+    }
+  }
+}
+
+function toggleHelp() {
+  helpVisible = !helpVisible;
+  if (dom.helpPanel) {
+    dom.helpPanel.hidden = !helpVisible;
+    dom.helpPanel.setAttribute('aria-hidden', String(!helpVisible));
+  }
+}
+
+function bindHelpPanel() {
+  if (!dom.helpPanel) return;
+  const closeBtn = dom.helpPanel.querySelector('.help-panel__close');
+  const content = dom.helpPanel.querySelector('.help-panel__content');
+  
+  closeBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleHelp();
+  });
+  
+  content?.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+  
+  dom.helpPanel.addEventListener('click', () => {
+    toggleHelp();
   });
 }
 
@@ -399,11 +453,13 @@ export function initUI(options) {
   dom.overview = document.getElementById('overview');
   dom.overviewSections = document.getElementById('overview-sections');
   dom.fallbackNotice = document.getElementById('fallback-notice');
+  dom.helpPanel = document.getElementById('help-panel');
 
   buildNav();
   buildOverview();
   bindEvents();
   bindKeyboard();
+  bindHelpPanel();
 
   if (reducedMotion) {
     setMode('overview', true);
