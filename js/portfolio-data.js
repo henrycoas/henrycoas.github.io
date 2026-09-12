@@ -16,9 +16,9 @@ export const ITEMS = [
   {
     id: 'ericsson',
     category: 'work',
-    title: '5G Software Developer @ Ericsson',
+    title: '5G/6G Software Developer @ Ericsson',
     description:
-      'Development and optimization of 5G networks and procedures according to 3GPP standards.',
+      'Layer 2 development for 5G/6G radio access networks (Stockholm, Sep 2023 – present). Owned downlink-only cell support across 6 frequency bands, redesigned the CSI reporting bit-packing algorithm to double the number of aggregated carriers, and optimized E5 interface sleep behaviour for 35% lower RTT. Added 25+ complex RAN interaction test scenarios across 3 frameworks, and prototyped a domain-aware research agent using skills and MCP integration.',
     tech: ['C++', 'C', 'Shell'],
     image: 'img/logo-ericsson.png',
     url: null,
@@ -29,9 +29,31 @@ export const ITEMS = [
     category: 'work',
     title: 'NLP Intern @ Riedia',
     description:
-      'Research, development, and testing of an NLP-based pipeline for news processing, article clustering, fact-checking and sentiment analysis.',
+      'Built a Python-based NLP pipeline with article clustering, sentiment analysis, and fact-checking components (Stockholm, May – Jul 2023). Designed to process 1000+ articles and serve news to 200+ readers in their preferred language.',
     tech: ['Python'],
     image: 'img/logo-riedia.png',
+    url: null,
+    linkLabel: null,
+  },
+  {
+    id: 'occlusion-reasoning',
+    category: 'projects',
+    title: 'Occlusion Reasoning for Autonomous Driving',
+    description:
+      'Computer vision and probabilistic modeling framework that reasons about occluded areas and predicts potentially hidden vehicles in realistic traffic scenarios, reducing false-positive occluded regions by up to 76%. Developed during my exchange at KTH.',
+    tech: ['Python', 'Computer Vision', 'Probabilistic Modeling'],
+    image: 'img/white.jpg',
+    url: null,
+    linkLabel: null,
+  },
+  {
+    id: 'twinbooks',
+    category: 'projects',
+    title: 'TwinBooks',
+    description:
+      'Language-learning app that combines interactive reading with audio storytelling, pairing text with narration to help learners absorb a new language in context.',
+    tech: ['TypeScript', 'Expo'],
+    image: 'img/white.jpg',
     url: null,
     linkLabel: null,
   },
