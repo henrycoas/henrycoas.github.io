@@ -1,8 +1,11 @@
+// `css` is the visual color slot (work=red, projects=yellow, achievements=green,
+// education=orange, contact=blue). `cardClass` styles the overview cards.
 export const CATEGORIES = [
-  { id: 'work', label: 'Work', key: 'w', css: 'work', cardClass: 'work-card' },
+  { id: 'experience', label: 'Experience', key: 'x', css: 'work', cardClass: 'work-card' },
   { id: 'projects', label: 'Projects', key: 'p', css: 'projects', cardClass: 'project-card' },
-  { id: 'competitions', label: 'Competitions', key: 'c', css: 'competitions', cardClass: 'competitions-card' },
-  { id: 'more', label: 'More', key: 'm', css: 'more', cardClass: 'linkedin-card' },
+  { id: 'achievements', label: 'Achievements', key: 'a', css: 'competitions', cardClass: 'competitions-card' },
+  { id: 'education', label: 'Education', key: 'd', css: 'education', cardClass: 'education-card' },
+  { id: 'contact', label: 'Contact', key: 'c', css: 'more', cardClass: 'linkedin-card' },
 ];
 
 export const CATEGORY_IDS = CATEGORIES.map((c) => c.id);
@@ -15,23 +18,56 @@ export function getCategoryByKey(key) {
 export const ITEMS = [
   {
     id: 'ericsson',
-    category: 'work',
-    title: '5G Software Developer @ Ericsson',
+    category: 'experience',
+    title: '5G/6G Software Developer @ Ericsson',
     description:
-      'Development and optimization of 5G networks and procedures according to 3GPP standards.',
+      'Layer 2 development for 5G/6G radio access networks (Stockholm, Sep 2023 – present). Owned downlink-only cell support across 6 frequency bands, redesigned the CSI reporting bit-packing algorithm to double the number of aggregated carriers, and optimized E5 interface sleep behaviour for 35% lower RTT. Added 25+ complex RAN interaction test scenarios across 3 frameworks, and prototyped a domain-aware research agent using skills and MCP integration.',
     tech: ['C++', 'C', 'Shell'],
     image: 'img/logo-ericsson.png',
     url: null,
     linkLabel: null,
   },
   {
+    id: 'gennext',
+    category: 'experience',
+    title: 'GenNext Community Coordinator @ Ericsson',
+    description:
+      'Coordinate monthly networking events for 1200+ early-career employees, building community and supporting onboarding across the organization (Sep 2025 – present).',
+    tech: [],
+    image: 'img/gennext.jpg',
+    url: null,
+    linkLabel: null,
+  },
+  {
     id: 'riedia',
-    category: 'work',
+    category: 'experience',
     title: 'NLP Intern @ Riedia',
     description:
-      'Research, development, and testing of an NLP-based pipeline for news processing, article clustering, fact-checking and sentiment analysis.',
+      'Built a Python-based NLP pipeline with article clustering, sentiment analysis, and fact-checking components (Stockholm, May – Jul 2023). Designed to process 1000+ articles and serve news to 200+ readers in their preferred language.',
     tech: ['Python'],
     image: 'img/logo-riedia.png',
+    url: null,
+    linkLabel: null,
+  },
+  {
+    id: 'occlusion-reasoning',
+    category: 'projects',
+    title: 'Occlusion Reasoning for Autonomous Driving',
+    description:
+      'Computer vision and probabilistic modeling framework that reasons about occluded areas and predicts potentially hidden vehicles in realistic traffic scenarios, reducing false-positive occluded regions by up to 76%. Developed during my exchange at KTH.',
+    tech: ['Python', 'Computer Vision', 'Probabilistic Modeling'],
+    image: 'img/occlusion.jpg',
+    url: null,
+    linkLabel: null,
+  },
+  {
+    id: 'twinbooks',
+    category: 'projects',
+    title: 'TwinBooks',
+    description:
+      'Language-learning app that combines interactive reading with audio storytelling, pairing text with narration to help learners absorb a new language in context.',
+    tech: ['TypeScript', 'Expo'],
+    image: 'img/twinbooks.jpg',
     url: null,
     linkLabel: null,
   },
@@ -41,7 +77,7 @@ export const ITEMS = [
     title: "JSBach's double interpreter",
     description:
       'Double interpreter for a custom musical programming language called JSBach. The output of this interpreter is a sheet music and some sound files that will reproduce the melody described by the composer/the code written by the programmer.',
-    tech: ['Python3', 'ANTLR4', 'Lilipond', 'Timidity++', 'ffmpeg'],
+    tech: ['Python3', 'ANTLR4', 'LilyPond', 'Timidity++', 'ffmpeg'],
     image: 'img/bac.png',
     url: 'https://github.com/henrycoas/JSBach-PracticaLP',
     linkLabel: 'View project',
@@ -60,7 +96,7 @@ export const ITEMS = [
   {
     id: 'item-recommendator',
     category: 'projects',
-    title: 'Item Recommendator',
+    title: 'Item Recommender',
     description:
       "Recommendation system that uses k-NN and k-means algorithms to suggest you items based on yours and other's reviews.",
     tech: ['C++', 'Visual Paradigm', 'HTML', 'CSS'],
@@ -80,19 +116,8 @@ export const ITEMS = [
     linkLabel: 'View projects',
   },
   {
-    id: 'projects-soon',
-    category: 'projects',
-    title: 'Soon...',
-    description: 'Soon...',
-    tech: [],
-    image: 'img/white.jpg',
-    url: null,
-    linkLabel: null,
-    placeholder: true,
-  },
-  {
     id: 'isc22',
-    category: 'competitions',
+    category: 'achievements',
     title: 'ISC22 Student Cluster Competition',
     description:
       'Member of the NotOnlyFLOPs team, representing Spain as Universitat Politècnica de Catalunya with a RISC-V based cluster and winner of the Fan Favorite Award.',
@@ -103,10 +128,10 @@ export const ITEMS = [
   },
   {
     id: 'ai-purge',
-    category: 'competitions',
-    title: 'AI Purge game player',
+    category: 'achievements',
+    title: 'Silver Medal — DSA Competition',
     description:
-      "Won 2nd place out of 316 Computer Science and Mathematics students in a C++ competition by coding an AI that plays in the competition's game.",
+      "Placed 2nd out of 316 Computer Science and Mathematics students by developing a C++ AI agent for a turn-based adversarial game, using real-time board-state evaluation and strategic decision-making to compete against other student-developed agents.",
     tech: ['C++', 'HTML'],
     image: 'img/logo-purge.png',
     url: 'https://github.com/henrycoas/University/tree/main/The%20Purge%20(Joc%20EDA)',
@@ -114,7 +139,7 @@ export const ITEMS = [
   },
   {
     id: 'mckinsey',
-    category: 'competitions',
+    category: 'achievements',
     title: 'McKinsey Forecasting',
     description:
       "With the aim of helping to solve a problem a McKinsey & Company's client has proposed them, we developed during a hackathon a model for sales forecasting using Machine Learning and Neural Networks techniques.",
@@ -125,7 +150,7 @@ export const ITEMS = [
   },
   {
     id: 'first-person-donor',
-    category: 'competitions',
+    category: 'achievements',
     title: 'First Person Donor',
     description:
       "Presented, directed and edited the shortfilm 'First Person Donor', a tale of life and death to promote organ donation. Done with my friends for the II Shortfilm Contest organized by the Jaume Arnó Foundation.",
@@ -135,25 +160,56 @@ export const ITEMS = [
     linkLabel: 'View shortfilm',
   },
   {
-    id: 'competitions-soon',
-    category: 'competitions',
-    title: 'Soon...',
-    description: 'Soon...',
+    id: 'upc',
+    category: 'education',
+    title: 'BSc Informatics Engineering @ UPC',
+    description:
+      'Bachelor’s degree in Informatics Engineering at the Polytechnic University of Catalonia, Barcelona (Sep 2019 – Jan 2024). Specialization in Computing and Algorithms.',
     tech: [],
-    image: 'img/white.jpg',
+    image: 'img/upc.jpg',
     url: null,
     linkLabel: null,
-    placeholder: true,
+  },
+  {
+    id: 'kth',
+    category: 'education',
+    title: 'Computer Science Exchange @ KTH',
+    description:
+      'Exchange year at KTH Royal Institute of Technology, Stockholm (Aug 2022 – Jun 2023). Coursework in Machine Learning, Computer Vision, Artificial Neural Networks, and Game Theory.',
+    tech: [],
+    image: 'img/kth.jpg',
+    url: null,
+    linkLabel: null,
   },
   {
     id: 'linkedin',
-    category: 'more',
+    category: 'contact',
     title: 'LinkedIn',
-    description: 'All of this and much more in LinkedIn.',
+    description: 'Connect with me and see more of my experience on LinkedIn.',
     tech: [],
     image: 'img/logo-linkedin.png',
     url: 'https://www.linkedin.com/in/enric-condal/',
     linkLabel: 'View LinkedIn',
+  },
+  {
+    id: 'github',
+    category: 'contact',
+    title: 'GitHub',
+    description: 'Browse my code and open-source projects on GitHub.',
+    tech: [],
+    image: 'img/github.jpg',
+    url: 'https://github.com/henrycoas',
+    linkLabel: 'View GitHub',
+  },
+  {
+    id: 'email',
+    category: 'contact',
+    title: 'Email',
+    description: 'Reach me directly by email.',
+    tech: [],
+    image: 'img/email.jpg',
+    url: 'mailto:enricondal@gmail.com',
+    linkLabel: 'Send email',
   },
 ];
 

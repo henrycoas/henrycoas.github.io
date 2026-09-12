@@ -77,8 +77,8 @@ function renderCategoryRow(item, index, cat) {
     </span>`;
 
   const actionHtml =
-    cat.id === 'projects' && item.url && item.linkLabel
-      ? `<a class="screen-row__action" href="${item.url}" target="_blank" rel="noopener noreferrer">${item.linkLabel} ${formatKeyHint(KEYS.openLink)}</a>`
+    item.url && item.linkLabel
+      ? `<a class="screen-row__action" href="${item.url}" target="_blank" rel="noopener noreferrer">${item.linkLabel}</a>`
       : '';
 
   if (actionHtml) {
