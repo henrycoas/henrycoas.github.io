@@ -2,6 +2,7 @@
   --color-work: rgb(255, 51, 51);
   --color-projects: rgb(255, 255, 51);
   --color-competitions: rgb(51, 255, 51);
+  --color-education: rgb(255, 153, 51);
   --color-more: rgb(51, 51, 255);
   --color-text: rgb(238, 238, 238);
   --color-muted: rgb(203, 203, 203);
@@ -120,6 +121,11 @@ body.mode-overview {
 .nav-btn--competitions {
   border-color: var(--color-competitions);
   color: var(--color-competitions);
+}
+
+.nav-btn--education {
+  border-color: var(--color-education);
+  color: var(--color-education);
 }
 
 .nav-btn--more {
@@ -389,11 +395,13 @@ body.mode-overview .cockpit {
 .screen-tile--work { border-color: var(--color-work); }
 .screen-tile--projects { border-color: var(--color-projects); }
 .screen-tile--competitions { border-color: var(--color-competitions); }
+.screen-tile--education { border-color: var(--color-education); }
 .screen-tile--more { border-color: var(--color-more); }
 
 .screen-tile--work:hover { box-shadow: 0 6px 24px rgba(255, 51, 51, 0.2); }
 .screen-tile--projects:hover { box-shadow: 0 6px 24px rgba(255, 255, 51, 0.15); }
 .screen-tile--competitions:hover { box-shadow: 0 6px 24px rgba(51, 255, 51, 0.15); }
+.screen-tile--education:hover { box-shadow: 0 6px 24px rgba(255, 153, 51, 0.2); }
 .screen-tile--more:hover { box-shadow: 0 6px 24px rgba(51, 51, 255, 0.2); }
 
 .screen-tile__label {
@@ -406,6 +414,7 @@ body.mode-overview .cockpit {
 .screen-tile--work .screen-tile__label { color: var(--color-work); }
 .screen-tile--projects .screen-tile__label { color: var(--color-projects); }
 .screen-tile--competitions .screen-tile__label { color: var(--color-competitions); }
+.screen-tile--education .screen-tile__label { color: var(--color-education); }
 .screen-tile--more .screen-tile__label { color: var(--color-more); }
 
 .screen-tile__count {
@@ -450,6 +459,7 @@ body.mode-overview .cockpit {
 .screen-view__title--work { color: var(--color-work); }
 .screen-view__title--projects { color: var(--color-projects); }
 .screen-view__title--competitions { color: var(--color-competitions); }
+.screen-view__title--education { color: var(--color-education); }
 .screen-view__title--more { color: var(--color-more); }
 
 /* List view */
@@ -525,8 +535,24 @@ body.mode-overview .cockpit {
   transform: translateX(2px);
 }
 
+.screen-row--split.screen-row--work .screen-row__main {
+  border-left: 3px solid var(--color-work);
+}
+
 .screen-row--split.screen-row--projects .screen-row__main {
   border-left: 3px solid var(--color-projects);
+}
+
+.screen-row--split.screen-row--competitions .screen-row__main {
+  border-left: 3px solid var(--color-competitions);
+}
+
+.screen-row--split.screen-row--education .screen-row__main {
+  border-left: 3px solid var(--color-education);
+}
+
+.screen-row--split.screen-row--more .screen-row__main {
+  border-left: 3px solid var(--color-more);
 }
 
 .screen-row__action {
@@ -549,6 +575,7 @@ body.mode-overview .cockpit {
 .screen-row--work { border-left: 3px solid var(--color-work); }
 .screen-row--projects { border-left: 3px solid var(--color-projects); }
 .screen-row--competitions { border-left: 3px solid var(--color-competitions); }
+.screen-row--education { border-left: 3px solid var(--color-education); }
 .screen-row--more { border-left: 3px solid var(--color-more); }
 
 .screen-row__thumb {
@@ -674,6 +701,7 @@ body.mode-overview .cockpit {
 .overview-section__header--work { color: var(--color-work); }
 .overview-section__header--projects { color: var(--color-projects); }
 .overview-section__header--competitions { color: var(--color-competitions); }
+.overview-section__header--education { color: var(--color-education); }
 .overview-section__header--more { color: var(--color-more); }
 
 .overview-section__count {
@@ -713,6 +741,11 @@ body.mode-overview .cockpit {
 .competitions-card {
   background: rgba(0, 255, 0, 0.25);
   border: 1px solid var(--color-competitions);
+}
+
+.education-card {
+  background: rgba(255, 153, 51, 0.25);
+  border: 1px solid var(--color-education);
 }
 
 .linkedin-card {
