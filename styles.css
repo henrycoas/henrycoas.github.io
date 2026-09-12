@@ -789,6 +789,10 @@ body.mode-overview .cockpit {
   -webkit-backdrop-filter: blur(4px);
 }
 
+.help-panel[hidden] {
+  display: none;
+}
+
 .help-panel__content {
   position: relative;
   width: 90%;
