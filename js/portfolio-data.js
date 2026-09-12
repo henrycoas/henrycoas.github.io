@@ -21,7 +21,7 @@ export const ITEMS = [
     category: 'experience',
     title: '5G/6G Software Developer @ Ericsson',
     description:
-      'Layer 2 development for 5G/6G radio access networks (Stockholm, Sep 2023 – present). Owned downlink-only cell support across 6 frequency bands, redesigned the CSI reporting bit-packing algorithm to double the number of aggregated carriers, and optimized E5 interface sleep behaviour for 35% lower RTT. Added 25+ complex RAN interaction test scenarios across 3 frameworks, and prototyped a domain-aware research agent using skills and MCP integration.',
+      'Developed and optimized 5G RAN Layer 2 features and verification flows for Carrier Aggregation, both in Purpose-built and Cloud RAN solutions.',
     tech: ['C++', 'C', 'Shell'],
     image: 'img/logo-ericsson.png',
     url: null,
@@ -32,7 +32,7 @@ export const ITEMS = [
     category: 'experience',
     title: 'GenNext Community Coordinator @ Ericsson',
     description:
-      'Coordinate monthly networking events for 1200+ early-career employees, building community and supporting onboarding across the organization (Sep 2025 – present).',
+      'Coordinated monthly networking events for 1200+ early-career employees, building community and supporting onboarding across the organization.',
     tech: [],
     image: 'img/gennext.jpg',
     url: null,
@@ -43,7 +43,7 @@ export const ITEMS = [
     category: 'experience',
     title: 'NLP Intern @ Riedia',
     description:
-      'Built a Python-based NLP pipeline with article clustering, sentiment analysis, and fact-checking components (Stockholm, May – Jul 2023). Designed to process 1000+ articles and serve news to 200+ readers in their preferred language.',
+      'Built a Python-based NLP pipeline with article clustering, sentiment analysis, and fact-checking components. Designed to process 1000+ articles and serve news to 200+ readers in their preferred language.',
     tech: ['Python'],
     image: 'img/logo-riedia.png',
     url: null,
@@ -54,7 +54,7 @@ export const ITEMS = [
     category: 'projects',
     title: 'Occlusion Reasoning for Autonomous Driving',
     description:
-      'Computer vision and probabilistic modeling framework that reasons about occluded areas and predicts potentially hidden vehicles in realistic traffic scenarios, reducing false-positive occluded regions by up to 76%. Developed during my exchange at KTH.',
+      'Computer vision and probabilistic modeling framework that reasons about occluded areas and predicts potentially hidden vehicles in realistic traffic scenarios. Developed during my exchange at KTH.',
     tech: ['Python', 'Computer Vision', 'Probabilistic Modeling'],
     image: 'img/occlusion.jpg',
     url: null,
