@@ -117,7 +117,7 @@ function spawnStar(positions, speeds, colors, rest, i) {
   positions[i * 3] = (Math.random() - 0.5) * SPREAD_X;
   positions[i * 3 + 1] = (Math.random() - 0.5) * SPREAD_Y;
   positions[i * 3 + 2] = SPAWN_Z - Math.random() * 80;
-  speeds[i] = 1.2 + Math.random() * 3.5;
+  speeds[i] = 0.5 + Math.random() * 1.4;
 
   sampleRestColor(_restSample);
   rest[i * 3] = _restSample[0];
