@@ -1,532 +1,284 @@
-import {
-  CATEGORIES,
-  CATEGORY_IDS,
-  getCategory,
-  getCategoryByKey,
-  getItem,
-  getItemsByCategory,
-} from './portfolio-data.js';
+import { CATEGORIES, getCategoryByKey, getItemsByCategory } from './portfolio-data.js';
 
-const KEYS = {
-  modeOverview: 'o',
-  modeExplore: 'e',
-  home: 'h',
-  back: 'b',
-  openLink: 'l',
-};
+const ARROW = '<svg class="icon-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" /></svg>';
 
-let mode = 'explore';
-let sceneApi = null;
-let reducedMotion = false;
-let activeCategory = null;
-let cockpitView = 'home';
-let overviewCategory = null;
-let currentItemId = null;
-let helpVisible = false;
-
-const dom = {};
-
-function formatKeyHint(key) {
-  return `<kbd class="key-hint">[${String(key).toUpperCase()}]</kbd>`;
+function esc(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
-function labelWithKey(text, key) {
-  return `${text} ${formatKeyHint(key)}`;
+function splitTitle(title) {
+  const [role, org] = title.split(' @ ');
+  return { role, org: org ?? '' };
 }
 
-function itemMetaPreview(item) {
-  if (item.tech?.length) return item.tech.join(' · ');
-  const text = item.description;
-  return text.length <= 60 ? text : `${text.slice(0, 60)}…`;
+function isExternal(url) {
+  return /^https?:/.test(url);
 }
 
-function setActiveNavCategory(categoryId) {
-  dom.categoriesNav.querySelectorAll('button').forEach((btn) => {
-    btn.classList.toggle('nav-btn--active', categoryId != null && btn.dataset.category === categoryId);
-  });
+function linkAttrs(url) {
+  return isExternal(url) ? `href="${esc(url)}" target="_blank" rel="noopener noreferrer"` : `href="${esc(url)}"`;
 }
 
-function machineConsole(lines, { blink = false } = {}) {
-  const body = lines
+function tags(item) {
+  if (!item.tech?.length) return '';
+  return `<ul class="tags" aria-label="Technologies">${item.tech.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`;
+}
+
+function media(item, className = '') {
+  const bg = item.imageBg === 'light' ? ' media--light' : '';
+  return `<div class="media${bg} ${className}"><img src="${esc(item.image)}" alt="" loading="lazy" decoding="async" /></div>`;
+}
+
+function sectionNumber(index) {
+  return String(index + 1).padStart(2, '0');
+}
+
+function sectionHeader(cat, index, count) {
+  return `
+    <header class="section__header reveal">
+      <p class="section__index" aria-hidden="true">${sectionNumber(index)}</p>
+      <div class="section__heading">
+        <h2 class="section__title" id="${cat.id}-title">${esc(cat.label)}</h2>
+        <p class="section__blurb">${esc(cat.blurb)}</p>
+      </div>
+      <p class="section__count">${count} ${count === 1 ? 'entry' : 'entries'}</p>
+    </header>`;
+}
+
+function renderExperience(items) {
+  const rows = items
+    .map((item) => {
+      const { role, org } = splitTitle(item.title);
+      return `
+      <li class="xp reveal" id="${item.id}">
+        <p class="xp__org">${esc(org)}</p>
+        <div class="xp__body">
+          <h3 class="xp__role">${esc(role)}</h3>
+          <p class="xp__desc">${esc(item.description)}</p>
+        </div>
+        ${tags(item)}
+      </li>`;
+    })
+    .join('');
+  return `<ol class="xp-list">${rows}</ol>`;
+}
+
+function renderProjects(items) {
+  const cards = items
+    .map((item) => {
+      const title = item.url
+        ? `<a class="card__link" ${linkAttrs(item.url)}>${esc(item.title)}<span class="visually-hidden"> (${esc(item.linkLabel)}, opens in a new tab)</span></a>`
+        : esc(item.title);
+      return `
+      <li class="card reveal${item.url ? ' card--linked' : ''}" id="${item.id}">
+        ${media(item, 'card__media')}
+        <div class="card__body">
+          <h3 class="card__title">${title}</h3>
+          <p class="card__desc">${esc(item.description)}</p>
+          ${tags(item)}
+        </div>
+        ${item.url ? `<span class="card__arrow" aria-hidden="true">${ARROW}</span>` : ''}
+      </li>`;
+    })
+    .join('');
+  return `<ul class="card-grid">${cards}</ul>`;
+}
+
+function renderAchievements(items) {
+  const rows = items
     .map(
-      (line, i) =>
-        `<p class="screen-console__line${blink && i === lines.length - 1 ? ' screen-console__line--blink' : ''}">${line}</p>`
+      (item) => `
+      <li class="win reveal" id="${item.id}">
+        ${media(item, 'win__media')}
+        <div class="win__body">
+          ${item.highlight ? `<p class="win__highlight">${esc(item.highlight)}</p>` : ''}
+          <h3 class="win__title">${esc(item.title)}</h3>
+          <p class="win__desc">${esc(item.description)}</p>
+        </div>
+        ${
+          item.url
+            ? `<a class="text-link win__link" ${linkAttrs(item.url)}>${esc(item.linkLabel)}${ARROW}<span class="visually-hidden"> about ${esc(item.title)} (opens in a new tab)</span></a>`
+            : ''
+        }
+      </li>`
     )
     .join('');
-  return `<div class="screen-console" aria-hidden="true">${body}</div>`;
+  return `<ol class="win-list">${rows}</ol>`;
 }
 
-function renderScreen(html) {
-  dom.mainScreen.innerHTML = html;
-  dom.mainScreen.classList.remove('cockpit__screen--fade');
-  void dom.mainScreen.offsetWidth;
-  dom.mainScreen.classList.add('cockpit__screen--fade');
-}
-
-function itemKeyHint(index) {
-  return index < 9 ? formatKeyHint(String(index + 1)) : '';
-}
-
-function renderCategoryRow(item, index, cat) {
-  const titleKey = itemKeyHint(index) ? ` ${itemKeyHint(index)}` : '';
-  const bodyHtml = `
-    <img class="screen-row__thumb" src="${item.image}" alt="" loading="lazy" />
-    <span class="screen-row__body">
-      <span class="screen-row__title">${item.title}${titleKey}</span>
-      <span class="screen-row__meta">${itemMetaPreview(item)}</span>
-    </span>`;
-
-  const actionHtml =
-    item.url && item.linkLabel
-      ? `<a class="screen-row__action" href="${item.url}" target="_blank" rel="noopener noreferrer">${item.linkLabel}</a>`
-      : '';
-
-  if (actionHtml) {
-    return `
-      <div class="screen-row screen-row--split screen-row--${cat.css}">
-        <button type="button" class="screen-row__main" data-item="${item.id}">
-          ${bodyHtml}
-          <span class="screen-row__arrow" aria-hidden="true">›</span>
-        </button>
-        ${actionHtml}
-      </div>`;
-  }
-
-  return `
-    <button type="button" class="screen-row screen-row--${cat.css}" data-item="${item.id}">
-      ${bodyHtml}
-      <span class="screen-row__arrow" aria-hidden="true">›</span>
-    </button>`;
-}
-
-function bindCategoryList() {
-  dom.mainScreen.querySelector('[data-action="home"]')?.addEventListener('click', showCockpitHome);
-  dom.mainScreen.querySelectorAll('button[data-item]').forEach((btn) => {
-    btn.addEventListener('click', () => showCockpitItem(btn.dataset.item));
-  });
-}
-
-function showCockpitHome() {
-  cockpitView = 'home';
-  activeCategory = null;
-  currentItemId = null;
-  setActiveNavCategory(null);
-  dom.cockpitStatus.textContent = 'SYS ONLINE — SELECT SECTOR';
-  if (dom.welcomeMsg) dom.welcomeMsg.classList.remove('is-hidden');
-
-  const tiles = CATEGORIES.map(
-    (cat) => {
-      const count = getItemsByCategory(cat.id).length;
-      const countText = count === 1 ? '1 entry' : `${count} entries`;
+function renderEducation(items) {
+  const cards = items
+    .map((item) => {
+      const { role, org } = splitTitle(item.title);
       return `
-      <button type="button" class="screen-tile screen-tile--${cat.css}" data-category="${cat.id}">
-        <span class="screen-tile__label">${cat.label} ${formatKeyHint(cat.key)}</span>
-        <span class="screen-tile__count">${countText}</span>
-      </button>`;
-    }
-  ).join('');
-
-  renderScreen(`
-    <div class="screen-panel screen-panel--home">
-      ${machineConsole(
-        [
-          '> MAIN DISPLAY ONLINE',
-          '> AWAITING SECTOR SELECTION_',
-        ],
-        { blink: true }
-      )}
-      <div class="screen-tiles">${tiles}</div>
-    </div>
-  `);
-
-  dom.mainScreen.querySelectorAll('[data-category]').forEach((btn) => {
-    btn.addEventListener('click', () => showCockpitCategory(btn.dataset.category));
-  });
+      <li class="edu reveal" id="${item.id}">
+        <p class="edu__org" aria-hidden="true">${esc(org)}</p>
+        <h3 class="edu__role">${esc(role)}<span class="visually-hidden">, ${esc(org)}</span></h3>
+        <p class="edu__desc">${esc(item.description)}</p>
+      </li>`;
+    })
+    .join('');
+  return `<ul class="edu-grid">${cards}</ul>`;
 }
 
-function showCockpitCategory(categoryId) {
-  const cat = getCategory(categoryId);
-  if (!cat) return;
-
-  hideWelcomeMessage();
-  cockpitView = 'category';
-  activeCategory = categoryId;
-  currentItemId = null;
-  setActiveNavCategory(categoryId);
-  dom.cockpitStatus.textContent = `SECTOR: ${cat.label.toUpperCase()}`;
-
-  const items = getItemsByCategory(categoryId);
-  const rows = items.map((item, index) => renderCategoryRow(item, index, cat)).join('');
-  const recordWord = items.length === 1 ? 'RECORD' : 'RECORDS';
-
-  renderScreen(`
-    <div class="screen-panel">
-      <div class="screen-view__bar">
-        <button type="button" class="screen-back" data-action="home">${labelWithKey('Home', KEYS.home)}</button>
-        <h2 class="screen-view__title screen-view__title--${cat.css}">${cat.label}</h2>
-      </div>
-      ${machineConsole([
-        `> SECTOR: ${cat.label.toUpperCase()} · ${items.length} ${recordWord}`,
-      ])}
-      <div class="screen-list">${rows}</div>
-    </div>
-  `);
-
-  bindCategoryList();
-  history.replaceState(null, '', `#${categoryId}`);
+function renderContact(items, cat, index) {
+  const email = items.find((i) => i.url?.startsWith('mailto:'));
+  const others = items.filter((i) => i !== email && i.url);
+  const address = email?.url.replace('mailto:', '') ?? '';
+  return `
+    <div class="contact reveal">
+      <p class="section__index" aria-hidden="true">${sectionNumber(index)}</p>
+      <h2 class="contact__title" id="${cat.id}-title">Let’s talk<span class="accent" aria-hidden="true">.</span></h2>
+      <p class="section__blurb">${esc(cat.blurb)}</p>
+      ${email ? `<a class="contact__email" href="${esc(email.url)}">${esc(address)}</a>` : ''}
+      <ul class="contact__links">
+        ${others
+          .map(
+            (i) =>
+              `<li><a class="text-link" ${linkAttrs(i.url)}>${esc(i.title)}${ARROW}<span class="visually-hidden"> (opens in a new tab)</span></a></li>`
+          )
+          .join('')}
+      </ul>
+    </div>`;
 }
 
-function showCockpitItem(itemId) {
-  const item = getItem(itemId);
-  if (!item) return;
-
-  hideWelcomeMessage();
-  cockpitView = 'item';
-  currentItemId = itemId;
-  const cat = getCategory(item.category);
-  dom.cockpitStatus.textContent = `FILE: ${item.title.slice(0, 28).toUpperCase()}`;
-
-  const linkHtml =
-    item.url && item.linkLabel
-      ? `<a class="screen-detail__link" href="${item.url}" target="_blank" rel="noopener noreferrer">${item.linkLabel} ${formatKeyHint(KEYS.openLink)}</a>`
-      : '';
-  const techHtml = item.tech?.length ? `<p class="screen-detail__tech">(${item.tech.join(', ')})</p>` : '';
-
-  renderScreen(`
-    <div class="screen-panel">
-      <div class="screen-view__bar">
-        <button type="button" class="screen-back" data-action="back">${labelWithKey('Back', KEYS.back)}</button>
-        <h2 class="screen-view__title screen-view__title--${cat?.css ?? 'work'}">${cat?.label ?? 'File'}</h2>
-      </div>
-      <article class="screen-detail screen-detail--${cat?.css ?? 'work'}">
-        <img class="screen-detail__image" src="${item.image}" alt="${item.title}" loading="lazy" />
-        <h2 class="screen-detail__title">${item.title}</h2>
-        <p class="screen-detail__desc">${item.description}</p>
-        ${techHtml}
-        ${linkHtml}
-      </article>
-    </div>
-  `);
-
-  dom.mainScreen.querySelector('[data-action="back"]')?.addEventListener('click', () => {
-    showCockpitCategory(item.category);
-  });
-  history.replaceState(null, '', `#${item.category}/${item.id}`);
-}
-
-function buildOverview() {
-  dom.overviewSections.innerHTML = '';
-  CATEGORIES.forEach((cat) => {
-    const items = getItemsByCategory(cat.id);
-    const section = document.createElement('section');
-    section.className = 'overview-section';
-    section.id = `overview-${cat.id}`;
-
-    const header = document.createElement('h2');
-    header.className = `overview-section__header overview-section__header--${cat.css}`;
-    header.innerHTML = `${cat.label} ${formatKeyHint(cat.key)} <span class="overview-section__count">(${items.length})</span>`;
-    section.appendChild(header);
-
-    const cards = document.createElement('div');
-    cards.className = 'item-cards';
-
-    items.forEach((item) => {
-      const card = document.createElement('article');
-      card.className = `item-card ${cat.cardClass}`;
-
-      const img = document.createElement('img');
-      img.src = item.image;
-      img.alt = item.title;
-      card.appendChild(img);
-
-      const h3 = document.createElement('h3');
-      h3.textContent = item.title;
-      card.appendChild(h3);
-
-      const p = document.createElement('p');
-      p.textContent = item.description;
-      card.appendChild(p);
-
-      if (item.tech?.length) {
-        const tech = document.createElement('p');
-        tech.className = 'item-card__tech';
-        tech.innerHTML = `<b>(${item.tech.join(', ')})</b>`;
-        card.appendChild(tech);
-      }
-
-      if (item.url && item.linkLabel) {
-        const link = document.createElement('a');
-        link.className = 'item-card__link';
-        link.href = item.url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.textContent = item.linkLabel;
-        card.appendChild(link);
-      }
-
-      cards.appendChild(card);
-    });
-
-    section.appendChild(cards);
-    dom.overviewSections.appendChild(section);
-  });
-}
-
-function updateModeToggleLabel() {
-  const isOverview = mode === 'overview';
-  dom.modeToggle.innerHTML = isOverview
-    ? labelWithKey('Explore', KEYS.modeExplore)
-    : labelWithKey('Overview', KEYS.modeOverview);
-}
-
-function scrollToCategory(categoryId) {
-  overviewCategory = categoryId;
-  document.getElementById(`overview-${categoryId}`)?.scrollIntoView({
-    behavior: reducedMotion ? 'auto' : 'smooth',
-  });
-}
-
-const keyboardActions = {
-  setMode,
-  goCategory(categoryId) {
-    if (mode === 'overview') {
-      overviewCategory = categoryId;
-      scrollToCategory(categoryId);
-    } else {
-      setActiveNavCategory(categoryId);
-      showCockpitCategory(categoryId);
-    }
-  },
-  goHome() {
-    showCockpitHome();
-    setActiveNavCategory(null);
-  },
-  goBack() {
-    if (activeCategory) showCockpitCategory(activeCategory);
-  },
-  openItem: showCockpitItem,
-  onEscape() {
-    if (mode !== 'explore') return;
-    if (cockpitView === 'item' && activeCategory) {
-      showCockpitCategory(activeCategory);
-    } else if (cockpitView === 'category') {
-      showCockpitHome();
-      setActiveNavCategory(null);
-    }
-  },
+const RENDERERS = {
+  experience: renderExperience,
+  projects: renderProjects,
+  achievements: renderAchievements,
+  education: renderEducation,
+  contact: renderContact,
 };
 
-function bindKeyboard() {
+function renderSections(main) {
+  main.innerHTML = CATEGORIES.map((cat, index) => {
+    const items = getItemsByCategory(cat.id);
+    const render = RENDERERS[cat.id];
+    const header = cat.id === 'contact' ? '' : sectionHeader(cat, index, items.length);
+    return `
+      <section class="section section--${cat.id}" id="${cat.id}" aria-labelledby="${cat.id}-title">
+        <div class="container">
+          ${header}
+          ${render ? render(items, cat, index) : ''}
+        </div>
+      </section>`;
+  }).join('');
+}
+
+function renderNav(list) {
+  list.innerHTML = CATEGORIES.map(
+    (cat, index) => `
+      <li>
+        <a class="site-nav__link${cat.id === 'contact' ? ' site-nav__link--cta' : ''}" href="#${cat.id}" data-section="${cat.id}">
+          <span class="site-nav__num" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>${esc(cat.label)}
+        </a>
+      </li>`
+  ).join('');
+}
+
+function renderKeyHint(target) {
+  if (!target) return;
+  const keys = CATEGORIES.map((c) => `<kbd>${c.key.toUpperCase()}</kbd>`).join('');
+  target.innerHTML = `Press ${keys} to jump between sections, <kbd>H</kbd> for top`;
+}
+
+function trackActiveSection(links) {
+  const byId = new Map([...links].map((a) => [a.dataset.section, a]));
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        links.forEach((a) => a.removeAttribute('aria-current'));
+        byId.get(entry.target.id)?.setAttribute('aria-current', 'true');
+      });
+    },
+    { rootMargin: '-45% 0px -50% 0px' }
+  );
+  ['top', ...CATEGORIES.map((cat) => cat.id)].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+}
+
+function revealOnScroll(reducedMotion) {
+  const targets = document.querySelectorAll('.reveal');
+  if (reducedMotion || !('IntersectionObserver' in window)) return;
+  document.documentElement.classList.add('can-reveal');
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    },
+    { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+  );
+  targets.forEach((el) => observer.observe(el));
+}
+
+function scrollToId(id, reducedMotion) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+  history.replaceState(null, '', id === 'top' ? location.pathname : `#${id}`);
+}
+
+function bindKeyboard(reducedMotion) {
   document.addEventListener('keydown', (e) => {
-    if (e.repeat) return;
-    const tag = e.target.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable) return;
-    if (e.metaKey || e.ctrlKey || e.altKey) return;
-
+    if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target;
+    if (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
     const key = e.key.toLowerCase();
-
-    if (key === 'escape') {
+    if (key === 'h') {
       e.preventDefault();
-      if (helpVisible) {
-        toggleHelp();
-      } else {
-        keyboardActions.onEscape();
-      }
+      scrollToId('top', reducedMotion);
       return;
     }
-    if (key === KEYS.modeOverview && mode === 'explore') {
-      e.preventDefault();
-      setMode('overview');
-      return;
-    }
-    if (key === KEYS.modeExplore && mode === 'overview') {
-      e.preventDefault();
-      setMode('explore');
-      return;
-    }
-
     const cat = getCategoryByKey(key);
     if (cat) {
       e.preventDefault();
-      keyboardActions.goCategory(cat.id);
-      return;
-    }
-
-    if (key === '?' || (e.shiftKey && key === '/')) {
-      e.preventDefault();
-      toggleHelp();
-      return;
-    }
-
-    if (mode !== 'explore') return;
-
-    if (key === KEYS.home && cockpitView !== 'home') {
-      e.preventDefault();
-      keyboardActions.goHome();
-    } else if (key === KEYS.back && cockpitView === 'item') {
-      e.preventDefault();
-      keyboardActions.goBack();
-    } else if (key === KEYS.openLink) {
-      e.preventDefault();
-      openCurrentLink();
-    } else if (cockpitView === 'category' && key >= '1' && key <= '9') {
-      const items = getItemsByCategory(activeCategory);
-      const item = items[parseInt(key, 10) - 1];
-      if (item) {
-        e.preventDefault();
-        showCockpitItem(item.id);
-      }
+      scrollToId(cat.id, reducedMotion);
     }
   });
 }
 
-function openCurrentLink() {
-  if (cockpitView === 'item' && currentItemId) {
-    const item = getItem(currentItemId);
-    if (item?.url) {
-      window.open(item.url, '_blank', 'noopener,noreferrer');
-    }
+function bindHeader(header) {
+  const update = () => header.classList.toggle('is-scrolled', window.scrollY > 24);
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+}
+
+// Older links used `#category/item`; land on the item instead of a dead hash.
+function applyLegacyHash(reducedMotion) {
+  const match = location.hash.match(/^#([^/]+)\/([^/]+)$/);
+  if (!match) return;
+  const target = document.getElementById(match[2]) ? match[2] : match[1];
+  requestAnimationFrame(() => scrollToId(target, reducedMotion));
+}
+
+export function initUI({ reducedMotion = false } = {}) {
+  const main = document.getElementById('main');
+  const navList = document.getElementById('site-nav-list');
+
+  renderSections(main);
+  renderNav(navList);
+  renderKeyHint(document.getElementById('footer-keys'));
+
+  const year = document.getElementById('year');
+  if (year) year.textContent = String(new Date().getFullYear());
+
+  trackActiveSection(navList.querySelectorAll('a[data-section]'));
+  revealOnScroll(reducedMotion);
+  bindKeyboard(reducedMotion);
+  bindHeader(document.querySelector('.site-header'));
+
+  if (location.hash && !location.hash.includes('/')) {
+    requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView());
   }
-}
-
-function toggleHelp() {
-  helpVisible = !helpVisible;
-  if (dom.helpPanel) {
-    dom.helpPanel.hidden = !helpVisible;
-    dom.helpPanel.setAttribute('aria-hidden', String(!helpVisible));
-  }
-}
-
-function bindHelpPanel() {
-  if (!dom.helpPanel) return;
-  const closeBtn = dom.helpPanel.querySelector('.help-panel__close');
-  const content = dom.helpPanel.querySelector('.help-panel__content');
-  
-  closeBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleHelp();
-  });
-  
-  content?.addEventListener('click', (e) => {
-    e.stopPropagation();
-  });
-  
-  dom.helpPanel.addEventListener('click', () => {
-    toggleHelp();
-  });
-}
-
-function buildNav() {
-  dom.categoriesNav.innerHTML = '';
-  CATEGORIES.forEach((cat) => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = `nav-btn nav-btn--${cat.css}`;
-    btn.innerHTML = labelWithKey(cat.label, cat.key);
-    btn.dataset.category = cat.id;
-    btn.addEventListener('click', () => keyboardActions.goCategory(cat.id));
-    dom.categoriesNav.appendChild(btn);
-  });
-}
-
-function bindEvents() {
-  dom.modeToggle.addEventListener('click', () => {
-    setMode(mode === 'explore' ? 'overview' : 'explore');
-  });
-  window.addEventListener('hashchange', () => applyHash(location.hash));
-  document.addEventListener('visibilitychange', () => {
-    sceneApi?.setAnimationPaused(document.hidden || mode === 'overview');
-  });
-}
-
-export function initUI(options) {
-  sceneApi = options.scene ?? null;
-  reducedMotion = options.reducedMotion ?? false;
-
-  dom.body = document.body;
-  dom.modeToggle = document.getElementById('mode-toggle');
-  dom.categoriesNav = document.querySelector('.site-nav__categories');
-  dom.cockpit = document.getElementById('cockpit');
-  dom.mainScreen = document.getElementById('main-screen');
-  dom.cockpitStatus = document.getElementById('cockpit-status');
-  dom.welcomeMsg = document.getElementById('welcome-msg');
-  dom.overview = document.getElementById('overview');
-  dom.overviewSections = document.getElementById('overview-sections');
-  dom.fallbackNotice = document.getElementById('fallback-notice');
-  dom.helpPanel = document.getElementById('help-panel');
-
-  buildNav();
-  buildOverview();
-  bindEvents();
-  bindKeyboard();
-  bindHelpPanel();
-
-  if (reducedMotion) {
-    setMode('overview', true);
-  } else {
-    showCockpitHome();
-    updateModeToggleLabel();
-  }
-}
-
-function hideWelcomeMessage() {
-  if (dom.welcomeMsg && !dom.welcomeMsg.classList.contains('is-hidden')) {
-    dom.welcomeMsg.classList.add('is-hidden');
-  }
-}
-
-export function setMode(nextMode, silent = false) {
-  mode = nextMode;
-  const isOverview = mode === 'overview';
-
-  dom.body.classList.toggle('mode-explore', !isOverview);
-  dom.body.classList.toggle('mode-overview', isOverview);
-  updateModeToggleLabel();
-  dom.modeToggle.setAttribute('aria-pressed', String(isOverview));
-  dom.cockpit.hidden = isOverview;
-  dom.overview.hidden = !isOverview;
-  sceneApi?.setAnimationPaused(isOverview || document.hidden);
-
-  if (!isOverview) {
-    showCockpitHome();
-  } else {
-    setActiveNavCategory(null);
-    overviewCategory = overviewCategory ?? CATEGORIES[0].id;
-  }
-
-  if (!silent) {
-    if (isOverview) history.replaceState(null, '', '#overview');
-    else if (location.hash === '#overview') history.replaceState(null, '', window.location.pathname);
-  }
-}
-
-export function showWebGLFallback() {
-  dom.fallbackNotice.hidden = false;
-  setMode('overview', true);
-}
-
-export function applyHash(hash, initial = false) {
-  if (!hash || hash === '#') return;
-
-  if (hash === '#overview') {
-    setMode('overview', initial);
-    return;
-  }
-
-  const match = hash.match(/^#([^/]+)\/([^/]+)$/);
-  if (match) {
-    const [, categoryId, itemId] = match;
-    if (!getItem(itemId)) return;
-    if (mode === 'overview') {
-      scrollToCategory(categoryId);
-      return;
-    }
-    if (initial) setMode('explore', true);
-    setActiveNavCategory(categoryId);
-    showCockpitItem(itemId);
-    return;
-  }
-
-  const catId = hash.slice(1);
-  if (CATEGORY_IDS.includes(catId)) keyboardActions.goCategory(catId);
+  applyLegacyHash(reducedMotion);
 }

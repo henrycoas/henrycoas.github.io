@@ -1,34 +1,15 @@
-import { createScene } from './scene.js';
-import { initUI, showWebGLFallback, applyHash } from './ui.js';
+import { createStarfield } from './starfield.js';
+import { initUI } from './ui.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function checkWebGL() {
+initUI({ reducedMotion });
+
+const sky = document.getElementById('hero-sky');
+if (sky) {
   try {
-    const canvas = document.createElement('canvas');
-    return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
-  } catch {
-    return false;
+    createStarfield(sky, { reducedMotion });
+  } catch (err) {
+    console.error('Starfield unavailable:', err);
   }
 }
-
-function main() {
-  const container = document.getElementById('canvas-container');
-  let sceneApi = null;
-
-  if (!reducedMotion && checkWebGL()) {
-    try {
-      sceneApi = createScene(container, { reducedMotion: false });
-    } catch (err) {
-      console.error('Failed to init starfield:', err);
-    }
-  }
-
-  initUI({ scene: sceneApi, reducedMotion: reducedMotion || !sceneApi });
-
-  if (!sceneApi && !reducedMotion) showWebGLFallback();
-
-  applyHash(location.hash, true);
-}
-
-main();
