@@ -1,14 +1,11 @@
-// `css` is the visual color slot (work=red, projects=yellow, achievements=green,
-// education=orange, contact=blue). `cardClass` styles the overview cards.
+// `key` jumps to the section from the keyboard; avoid `h` (back to top).
 export const CATEGORIES = [
-  { id: 'experience', label: 'Experience', key: 'x', css: 'work', cardClass: 'work-card' },
-  { id: 'projects', label: 'Projects', key: 'p', css: 'projects', cardClass: 'project-card' },
-  { id: 'achievements', label: 'Achievements', key: 'a', css: 'competitions', cardClass: 'competitions-card' },
-  { id: 'education', label: 'Education', key: 'd', css: 'education', cardClass: 'education-card' },
-  { id: 'contact', label: 'Contact', key: 'c', css: 'more', cardClass: 'linkedin-card' },
+  { id: 'experience', label: 'Experience', key: 'x', blurb: 'Where I’ve worked.' },
+  { id: 'projects', label: 'Projects', key: 'p', blurb: 'Things I’ve built at university, on exchange and on my own.' },
+  { id: 'achievements', label: 'Achievements', key: 'a', blurb: 'Competitions, hackathons and one short film.' },
+  { id: 'education', label: 'Education', key: 'd', blurb: 'Where I learned the fundamentals.' },
+  { id: 'contact', label: 'Contact', key: 'c', blurb: 'The fastest way to reach me is email.' },
 ];
-
-export const CATEGORY_IDS = CATEGORIES.map((c) => c.id);
 
 export function getCategoryByKey(key) {
   const k = key?.toLowerCase();
@@ -79,6 +76,7 @@ export const ITEMS = [
       'Double interpreter for a custom musical programming language called JSBach. The output of this interpreter is a sheet music and some sound files that will reproduce the melody described by the composer/the code written by the programmer.',
     tech: ['Python3', 'ANTLR4', 'LilyPond', 'Timidity++', 'ffmpeg'],
     image: 'img/bac.png',
+    imageBg: 'light',
     url: 'https://github.com/henrycoas/JSBach-PracticaLP',
     linkLabel: 'View project',
   },
@@ -119,6 +117,7 @@ export const ITEMS = [
     id: 'isc22',
     category: 'achievements',
     title: 'ISC22 Student Cluster Competition',
+    highlight: 'Fan Favorite Award',
     description:
       'Member of the NotOnlyFLOPs team, representing Spain as Universitat Politècnica de Catalunya with a RISC-V based cluster and winner of the Fan Favorite Award.',
     tech: ['Shell', 'Fortran'],
@@ -130,6 +129,7 @@ export const ITEMS = [
     id: 'ai-purge',
     category: 'achievements',
     title: 'Silver Medal — DSA Competition',
+    highlight: '2nd of 316',
     description:
       "Placed 2nd out of 316 Computer Science and Mathematics students by developing a C++ AI agent for a turn-based adversarial game, using real-time board-state evaluation and strategic decision-making to compete against other student-developed agents.",
     tech: ['C++', 'HTML'],
@@ -141,6 +141,7 @@ export const ITEMS = [
     id: 'mckinsey',
     category: 'achievements',
     title: 'McKinsey Forecasting',
+    highlight: 'HackUPC 2022',
     description:
       "With the aim of helping to solve a problem a McKinsey & Company's client has proposed them, we developed during a hackathon a model for sales forecasting using Machine Learning and Neural Networks techniques.",
     tech: ['Python', 'TensorFlow', 'Jupyter Notebook'],
@@ -152,6 +153,7 @@ export const ITEMS = [
     id: 'first-person-donor',
     category: 'achievements',
     title: 'First Person Donor',
+    highlight: 'Short film',
     description:
       "Presented, directed and edited the shortfilm 'First Person Donor', a tale of life and death to promote organ donation. Done with my friends for the II Shortfilm Contest organized by the Jaume Arnó Foundation.",
     tech: ['Adobe Premiere Pro'],
@@ -213,14 +215,6 @@ export const ITEMS = [
   },
 ];
 
-export function getCategory(id) {
-  return CATEGORIES.find((c) => c.id === id);
-}
-
 export function getItemsByCategory(categoryId) {
   return ITEMS.filter((item) => item.category === categoryId);
-}
-
-export function getItem(id) {
-  return ITEMS.find((item) => item.id === id);
 }
