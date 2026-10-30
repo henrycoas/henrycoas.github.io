@@ -1,10 +1,18 @@
 // `key` jumps to the section from the keyboard; avoid `h` (back to top).
+// `heading` overrides `label` for the section title when the nav needs something shorter.
 export const CATEGORIES = [
   { id: 'experience', label: 'Experience', key: 'x', blurb: 'Where I’ve worked.' },
   { id: 'projects', label: 'Projects', key: 'p', blurb: 'Things I’ve built at university, on exchange and on my own.' },
-  { id: 'achievements', label: 'Achievements', key: 'a', blurb: 'Competitions, hackathons and one short film.' },
+  {
+    id: 'achievements',
+    label: 'Achievements',
+    heading: 'Leadership & Achievements',
+    key: 'a',
+    blurb: 'Communities I help run and competitions I’ve taken part in.',
+  },
   { id: 'education', label: 'Education', key: 'd', blurb: 'Where I learned the fundamentals.' },
-  { id: 'contact', label: 'Contact', key: 'c', blurb: 'The fastest way to reach me is email.' },
+  { id: 'skills', label: 'Skills', key: 's', blurb: 'What I code in, what I build with and what I speak.' },
+  { id: 'contact', label: 'Contact', key: 'c', blurb: 'The fastest way to reach me is email or LinkedIn.' },
 ];
 
 export function getCategoryByKey(key) {
@@ -12,26 +20,24 @@ export function getCategoryByKey(key) {
   return CATEGORIES.find((c) => c.key === k);
 }
 
+// Text fields support **double asterisks** to emphasise a metric.
 export const ITEMS = [
   {
     id: 'ericsson',
     category: 'experience',
     title: '5G/6G Software Developer @ Ericsson',
+    period: 'Sep 2023 – Present',
+    place: 'Stockholm, Sweden',
     description:
       'Developed and optimized 5G RAN Layer 2 features and verification flows for Carrier Aggregation, both in Purpose-built and Cloud RAN solutions.',
-    tech: ['C++', 'C', 'Shell'],
+    highlights: [
+      'Owned the Layer 2 implementation of downlink-only cell support, letting operators use additional downlink-only spectrum across **6 frequency bands** as carrier aggregation capacity and data rate boosters.',
+      'Removed a scalability limit in CSI reporting by redesigning the bit-packing algorithm, **doubling** the maximum number of aggregated carriers.',
+      'Optimized sleep behaviour in the E5 interface for **35% lower RTT**, preventing downlink throughput degradation.',
+      'Added **25+** complex RAN interaction scenarios (scheduler timing, multi-cell, multi-UE and inter-platform coordination) across **3** test frameworks.',
+    ],
+    tech: ['C++', 'C', 'Bash'],
     image: 'img/logo-ericsson.png',
-    url: null,
-    linkLabel: null,
-  },
-  {
-    id: 'gennext',
-    category: 'experience',
-    title: 'GenNext Community Coordinator @ Ericsson',
-    description:
-      'Coordinated monthly networking events for 1200+ early-career employees, building community and supporting onboarding across the organization.',
-    tech: [],
-    image: 'img/gennext.jpg',
     url: null,
     linkLabel: null,
   },
@@ -39,8 +45,10 @@ export const ITEMS = [
     id: 'riedia',
     category: 'experience',
     title: 'NLP Intern @ Riedia',
+    period: 'May 2023 – Jul 2023',
+    place: 'Stockholm, Sweden',
     description:
-      'Built a Python-based NLP pipeline with article clustering, sentiment analysis, and fact-checking components. Designed to process 1000+ articles and serve news to 200+ readers in their preferred language.',
+      'Built a Python-based NLP pipeline with article clustering, sentiment analysis and fact-checking components, aimed at processing **1000+** articles and serving news to **200+** readers in their preferred language.',
     tech: ['Python'],
     image: 'img/logo-riedia.png',
     url: null,
@@ -50,19 +58,20 @@ export const ITEMS = [
     id: 'occlusion-reasoning',
     category: 'projects',
     title: 'Occlusion Reasoning for Autonomous Driving',
+    highlight: 'Bachelor’s thesis',
     description:
-      'Computer vision and probabilistic modeling framework that reasons about occluded areas and predicts potentially hidden vehicles in realistic traffic scenarios. Developed during my exchange at KTH.',
+      'Reachability analysis for occlusion reasoning in realistic driving scenarios: a computer vision and probabilistic modeling framework that predicts potentially hidden vehicles, reducing false-positive occluded regions by up to **76%**. Developed during my exchange at KTH.',
     tech: ['Python', 'Computer Vision', 'Probabilistic Modeling'],
     image: 'img/occlusion.jpg',
-    url: null,
-    linkLabel: null,
+    url: 'https://www.diva-portal.org/smash/record.jsf?pid=diva2%3A1779805&dswid=7217',
+    linkLabel: 'Read thesis',
   },
   {
     id: 'twinbooks',
     category: 'projects',
     title: 'TwinBooks',
     description:
-      'Language-learning app that combines interactive reading with audio storytelling, pairing text with narration to help learners absorb a new language in context.',
+      'Language-learning app combining interactive reading with audio storytelling, so learners absorb a new language in context.',
     tech: ['TypeScript', 'Expo'],
     image: 'img/twinbooks.jpg',
     url: null,
@@ -71,10 +80,11 @@ export const ITEMS = [
   {
     id: 'jsbach',
     category: 'projects',
-    title: "JSBach's double interpreter",
+    title: 'JSBach: a Musical Programming Language',
+    highlight: 'Top course score',
     description:
-      'Double interpreter for a custom musical programming language called JSBach. The output of this interpreter is a sheet music and some sound files that will reproduce the melody described by the composer/the code written by the programmer.',
-    tech: ['Python3', 'ANTLR4', 'LilyPond', 'Timidity++', 'ffmpeg'],
+      'Compiler for a custom music-oriented programming language, with lexical analysis, parsing and code generation that turn programs into sheet music and audio. Achieved the **maximum attainable course score**.',
+    tech: ['Python', 'ANTLR', 'LilyPond', 'Timidity++', 'ffmpeg'],
     image: 'img/bac.png',
     imageBg: 'light',
     url: 'https://github.com/henrycoas/JSBach-PracticaLP',
@@ -114,13 +124,29 @@ export const ITEMS = [
     linkLabel: 'View projects',
   },
   {
+    id: 'gennext',
+    category: 'achievements',
+    title: 'GenNext Community Coordinator',
+    highlight: 'Leadership',
+    place: 'Ericsson',
+    period: 'Sep 2025 – Present',
+    description:
+      'Coordinated monthly networking events for **1200+** early-career employees, building community and supporting onboarding across the organization.',
+    tech: [],
+    image: 'img/gennext.jpg',
+    url: null,
+    linkLabel: null,
+  },
+  {
     id: 'isc22',
     category: 'achievements',
-    title: 'ISC22 Student Cluster Competition',
+    title: 'Spain Representative — ISC22 Student Cluster Competition',
     highlight: 'Fan Favorite Award',
+    place: 'Barcelona Supercomputing Center & ISC High Performance',
+    period: 'Nov 2021 – Jun 2022',
     description:
-      'Member of the NotOnlyFLOPs team, representing Spain as Universitat Politècnica de Catalunya with a RISC-V based cluster and winner of the Fan Favorite Award.',
-    tech: ['Shell', 'Fortran'],
+      'Built, configured and benchmarked a RISC-V compute cluster, **representing Spain** in an international HPC competition. Optimized computational chemistry, weather and climate modeling, and fluid dynamics workloads under strict power constraints, and won the **Fan Favorite Award** through community voting.',
+    tech: ['Bash', 'Fortran'],
     image: 'img/trophy-isc.jpg',
     url: 'https://www.hpcadvisorycouncil.com/events/2022/student-cluster-competition/',
     linkLabel: 'View webpage',
@@ -128,10 +154,12 @@ export const ITEMS = [
   {
     id: 'ai-purge',
     category: 'achievements',
-    title: 'Silver Medal — DSA Competition',
+    title: 'Silver Medal — Data Structures and Algorithms Competition',
     highlight: '2nd of 316',
+    place: 'Polytechnic University of Catalonia',
+    period: 'Dec 2020',
     description:
-      "Placed 2nd out of 316 Computer Science and Mathematics students by developing a C++ AI agent for a turn-based adversarial game, using real-time board-state evaluation and strategic decision-making to compete against other student-developed agents.",
+      'Placed **2nd out of 316** Computer Science and Mathematics students by developing a C++ AI agent for a turn-based adversarial game, using real-time board-state evaluation and strategic decision-making to compete against other student-developed agents.',
     tech: ['C++', 'HTML'],
     image: 'img/logo-purge.png',
     url: 'https://github.com/henrycoas/University/tree/main/The%20Purge%20(Joc%20EDA)',
@@ -162,24 +190,27 @@ export const ITEMS = [
     linkLabel: 'View shortfilm',
   },
   {
-    id: 'upc',
+    id: 'kth',
     category: 'education',
-    title: 'BSc Informatics Engineering @ UPC',
+    title: 'Computer Science — Exchange @ KTH',
+    place: 'Kungliga Tekniska Högskolan, Stockholm',
+    period: 'Aug 2022 – Jun 2023',
     description:
-      'Bachelor’s degree in Informatics Engineering at the Polytechnic University of Catalonia, Barcelona (Sep 2019 – Jan 2024). Specialization in Computing and Algorithms.',
+      'Relevant coursework: Machine Learning, Computer Vision, Artificial Neural Networks and Game Theory.',
     tech: [],
-    image: 'img/upc.jpg',
+    image: 'img/kth.jpg',
     url: null,
     linkLabel: null,
   },
   {
-    id: 'kth',
+    id: 'upc',
     category: 'education',
-    title: 'Computer Science Exchange @ KTH',
-    description:
-      'Exchange year at KTH Royal Institute of Technology, Stockholm (Aug 2022 – Jun 2023). Coursework in Machine Learning, Computer Vision, Artificial Neural Networks, and Game Theory.',
+    title: 'Informatics Engineering (BSc) @ UPC',
+    place: 'Polytechnic University of Catalonia, Barcelona',
+    period: 'Sep 2019 – Jan 2024',
+    description: 'Specialization in Computing and Algorithms.',
     tech: [],
-    image: 'img/kth.jpg',
+    image: 'img/upc.jpg',
     url: null,
     linkLabel: null,
   },
@@ -204,6 +235,16 @@ export const ITEMS = [
     linkLabel: 'View GitHub',
   },
   {
+    id: 'devpost',
+    category: 'contact',
+    title: 'Devpost',
+    description: 'Hackathon projects and submissions on Devpost.',
+    tech: [],
+    image: null,
+    url: 'https://devpost.com/henrykingus',
+    linkLabel: 'View Devpost',
+  },
+  {
     id: 'email',
     category: 'contact',
     title: 'Email',
@@ -214,6 +255,25 @@ export const ITEMS = [
     linkLabel: 'Send email',
   },
 ];
+
+// `core` groups are the primary stack and get the accent treatment.
+export const SKILLS = {
+  groups: [
+    { label: 'Core', items: ['C++', 'Python', 'C', 'Bash'], core: true },
+    { label: 'Experienced', items: ['TypeScript', 'Java', 'R', 'Kotlin'] },
+    { label: 'Systems & development', items: ['Linux', 'Git', 'Gerrit', 'Docker', 'Jenkins', 'Bazel', 'ANTLR', 'Expo'] },
+    { label: 'AI / ML', items: ['PyTorch', 'TensorFlow', 'Agentic orchestration'] },
+  ],
+  languages: [
+    { name: 'Catalan', level: 'Native' },
+    { name: 'Spanish', level: 'Native' },
+    { name: 'English', level: 'C1' },
+    { name: 'Swedish', level: 'B2' },
+    { name: 'French', level: 'B1' },
+    { name: 'German', level: 'A1' },
+  ],
+  interests: ['Creative writing', 'Running', 'Swimming', 'Table tennis'],
+};
 
 export function getItemsByCategory(categoryId) {
   return ITEMS.filter((item) => item.category === categoryId);
