@@ -235,6 +235,16 @@ export const ITEMS = [
     linkLabel: 'View GitHub',
   },
   {
+    id: 'devpost',
+    category: 'contact',
+    title: 'Devpost',
+    description: 'Hackathon projects and submissions on Devpost.',
+    tech: [],
+    image: null,
+    url: 'https://devpost.com/henrykingus',
+    linkLabel: 'View Devpost',
+  },
+  {
     id: 'email',
     category: 'contact',
     title: 'Email',
