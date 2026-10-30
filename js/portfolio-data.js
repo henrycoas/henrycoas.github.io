@@ -12,7 +12,7 @@ export const CATEGORIES = [
   },
   { id: 'education', label: 'Education', key: 'd', blurb: 'Where I learned the fundamentals.' },
   { id: 'skills', label: 'Skills', key: 's', blurb: 'What I code in, what I build with and what I speak.' },
-  { id: 'contact', label: 'Contact', key: 'c', blurb: 'The fastest way to reach me is email.' },
+  { id: 'contact', label: 'Contact', key: 'c', blurb: 'The fastest way to reach me is email or LinkedIn.' },
 ];
 
 export function getCategoryByKey(key) {

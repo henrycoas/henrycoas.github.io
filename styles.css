@@ -438,10 +438,6 @@ kbd {
   color: var(--signal);
 }
 
-.marker {
-  background: linear-gradient(var(--signal), var(--signal)) left 92% / 100% 2px no-repeat;
-}
-
 /* A short yellow tick on the leading edge of key dividers. */
 .tick {
   position: relative;
