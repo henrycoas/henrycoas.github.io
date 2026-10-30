@@ -1,6 +1,8 @@
-import { CATEGORIES, getCategoryByKey, getItemsByCategory } from './portfolio-data.js';
+import { CATEGORIES, SKILLS, getCategoryByKey, getItemsByCategory } from './portfolio-data.js';
 
 const ARROW = '<svg class="icon-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" /></svg>';
+
+const LEVELS = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5, C2: 6, Native: 6 };
 
 function esc(value) {
   return String(value ?? '')
@@ -8,6 +10,14 @@ function esc(value) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function rich(text) {
+  return esc(text).replace(/\*\*(.+?)\*\*/g, '<strong class="metric">$1</strong>');
+}
+
+function plain(text) {
+  return String(text ?? '').replace(/\*\*/g, '');
 }
 
 function splitTitle(title) {
@@ -33,19 +43,31 @@ function media(item, className = '') {
   return `<div class="media${bg} ${className}"><img src="${esc(item.image)}" alt="" loading="lazy" decoding="async" /></div>`;
 }
 
+function period(item) {
+  if (!item.period) return '';
+  const current = /present$/i.test(item.period);
+  return `<span class="period${current ? ' period--current' : ''}">${current ? '<span class="now-dot" aria-hidden="true"></span>' : ''}${esc(item.period)}</span>`;
+}
+
+function meta(item, { withPlace = true } = {}) {
+  const parts = [period(item), withPlace && item.place ? `<span>${esc(item.place)}</span>` : ''].filter(Boolean);
+  return parts.length ? `<p class="meta">${parts.join('')}</p>` : '';
+}
+
 function sectionNumber(index) {
   return String(index + 1).padStart(2, '0');
 }
 
 function sectionHeader(cat, index, count) {
+  const countHtml = count ? `<p class="section__count">${count} ${count === 1 ? 'entry' : 'entries'}</p>` : '';
   return `
     <header class="section__header reveal">
       <p class="section__index" aria-hidden="true">${sectionNumber(index)}</p>
       <div class="section__heading">
-        <h2 class="section__title" id="${cat.id}-title">${esc(cat.label)}</h2>
+        <h2 class="section__title" id="${cat.id}-title">${esc(cat.heading ?? cat.label)}</h2>
         <p class="section__blurb">${esc(cat.blurb)}</p>
       </div>
-      <p class="section__count">${count} ${count === 1 ? 'entry' : 'entries'}</p>
+      ${countHtml}
     </header>`;
 }
 
@@ -53,18 +75,25 @@ function renderExperience(items) {
   const rows = items
     .map((item) => {
       const { role, org } = splitTitle(item.title);
+      const highlights = item.highlights?.length
+        ? `<ul class="xp__highlights">${item.highlights.map((h) => `<li>${rich(h)}</li>`).join('')}</ul>`
+        : '';
       return `
       <li class="xp reveal" id="${item.id}">
-        <p class="xp__org">${esc(org)}</p>
+        <div class="xp__side">
+          <p class="xp__org">${esc(org)}</p>
+          ${meta(item)}
+        </div>
         <div class="xp__body">
           <h3 class="xp__role">${esc(role)}</h3>
-          <p class="xp__desc">${esc(item.description)}</p>
+          <p class="xp__desc">${rich(item.description)}</p>
+          ${highlights}
         </div>
         ${tags(item)}
       </li>`;
     })
     .join('');
-  return `<ol class="xp-list">${rows}</ol>`;
+  return `<ol class="xp-list tick">${rows}</ol>`;
 }
 
 function renderProjects(items) {
@@ -77,8 +106,9 @@ function renderProjects(items) {
       <li class="card reveal${item.url ? ' card--linked' : ''}" id="${item.id}">
         ${media(item, 'card__media')}
         <div class="card__body">
+          ${item.highlight ? `<p class="eyebrow-label">${esc(item.highlight)}</p>` : ''}
           <h3 class="card__title">${title}</h3>
-          <p class="card__desc">${esc(item.description)}</p>
+          <p class="card__desc">${rich(item.description)}</p>
           ${tags(item)}
         </div>
         ${item.url ? `<span class="card__arrow" aria-hidden="true">${ARROW}</span>` : ''}
@@ -95,13 +125,14 @@ function renderAchievements(items) {
       <li class="win reveal" id="${item.id}">
         ${media(item, 'win__media')}
         <div class="win__body">
-          ${item.highlight ? `<p class="win__highlight">${esc(item.highlight)}</p>` : ''}
+          ${item.highlight ? `<p class="eyebrow-label">${esc(item.highlight)}</p>` : ''}
           <h3 class="win__title">${esc(item.title)}</h3>
-          <p class="win__desc">${esc(item.description)}</p>
+          ${meta(item)}
+          <p class="win__desc">${rich(item.description)}</p>
         </div>
         ${
           item.url
-            ? `<a class="text-link win__link" ${linkAttrs(item.url)}>${esc(item.linkLabel)}${ARROW}<span class="visually-hidden"> about ${esc(item.title)} (opens in a new tab)</span></a>`
+            ? `<a class="text-link win__link" ${linkAttrs(item.url)}>${esc(item.linkLabel)}${ARROW}<span class="visually-hidden"> about ${esc(plain(item.title))} (opens in a new tab)</span></a>`
             : ''
         }
       </li>`
@@ -118,11 +149,53 @@ function renderEducation(items) {
       <li class="edu reveal" id="${item.id}">
         <p class="edu__org" aria-hidden="true">${esc(org)}</p>
         <h3 class="edu__role">${esc(role)}<span class="visually-hidden">, ${esc(org)}</span></h3>
-        <p class="edu__desc">${esc(item.description)}</p>
+        ${meta(item)}
+        <p class="edu__desc">${rich(item.description)}</p>
       </li>`;
     })
     .join('');
   return `<ul class="edu-grid">${cards}</ul>`;
+}
+
+function renderSkills() {
+  const groups = SKILLS.groups
+    .map(
+      (group) => `
+      <div class="skill-group${group.core ? ' skill-group--core' : ''}">
+        <h3 class="skill-group__label">${esc(group.label)}</h3>
+        <ul class="chips">${group.items.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
+      </div>`
+    )
+    .join('');
+
+  const languages = SKILLS.languages
+    .map(({ name, level }) => {
+      const filled = LEVELS[level] ?? 0;
+      const native = level === 'Native';
+      const bars = Array.from({ length: 6 }, (_, i) => `<span class="${i < filled ? 'is-on' : ''}"></span>`).join('');
+      return `
+        <li class="lang${native ? ' lang--native' : ''}">
+          <span class="lang__name">${esc(name)}</span>
+          <span class="lang__meter" aria-hidden="true">${bars}</span>
+          <span class="lang__level">${esc(level)}</span>
+        </li>`;
+    })
+    .join('');
+
+  return `
+    <div class="skills reveal">
+      <div class="skills__stack">${groups}</div>
+      <div class="skills__aside">
+        <div class="skill-group">
+          <h3 class="skill-group__label">Languages</h3>
+          <ul class="langs">${languages}</ul>
+        </div>
+        <div class="skill-group">
+          <h3 class="skill-group__label">Interests</h3>
+          <p class="interests">${SKILLS.interests.map(esc).join('<span class="interests__sep" aria-hidden="true">✦</span>')}</p>
+        </div>
+      </div>
+    </div>`;
 }
 
 function renderContact(items, cat, index) {
@@ -151,6 +224,7 @@ const RENDERERS = {
   projects: renderProjects,
   achievements: renderAchievements,
   education: renderEducation,
+  skills: renderSkills,
   contact: renderContact,
 };
 
