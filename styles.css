@@ -433,11 +433,6 @@ kbd {
   color: var(--signal);
 }
 
-.eyebrow__sep {
-  margin: 0 4px;
-  color: var(--signal);
-}
-
 /* A short yellow tick on the leading edge of key dividers. */
 .tick {
   position: relative;
